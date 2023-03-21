@@ -3,12 +3,18 @@
     <image class="logo" src="/static/logo.png"></image>
     <view class="text-area">
       <text class="title">{{ title }}</text>
+      <u-button text="渐变色按钮" color="linear-gradient(to right, rgb(66, 83, 216), rgb(213, 51, 186))"></u-button>
     </view>
   </view>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+
+uni.onNetworkStatusChange((e) => {
+  console.log('isConnected', e.isConnected);
+  console.log('networkType', e.networkType);
+})
 
 const title = ref('Hello World')
 </script>
