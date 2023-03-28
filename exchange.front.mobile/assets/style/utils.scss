@@ -1,0 +1,279 @@
+@import "./variables.scss";
+
+// 清除浮动
+.clear-fix {
+  zoom: 1;
+
+  &::after {
+    content: "";
+    display: block;
+    clear: both;
+    width: 0;
+    height: 0;
+    line-height: 0;
+    overflow: hidden;
+  }
+}
+
+// 溢出部分省略号显示
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+}
+
+// 点击小动画
+.hover {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// 没有数据
+.nodata{
+  @extend .ta-center, .c-tip1;
+  margin-top: 200rpx;
+}
+
+// 表单 -------------------------------------------------------------------
+.c-form {
+  padding: 0 72rpx;
+
+  .c-form-item {
+    @extend .bb-g0,
+    .d-flex,
+    .ai-center;
+    height: 55rpx;
+    margin-bottom: 45rpx;
+  }
+}
+
+// 输入框占位符
+.c-input {
+  @extend .c-text,
+  .fs-sm,
+  .f-1;
+}
+
+.c-input-placehold {
+  @extend .c-placehold,
+  .fs-sm;
+}
+
+.c-input-left {
+  @extend .flex-center,
+  .mr-20;
+  width: 65rpx;
+}
+
+.c-input-right {
+  @extend .flex-center,
+  .ml-20;
+  width: 65rpx;
+}
+
+.c-button {
+  @extend .c-white,
+  .bgc-primary,
+  .fs-xl;
+  height: 90rpx;
+  line-height: 90rpx;
+}
+
+// 字体加粗 加粗700
+.fw {
+  font-weight: 700;
+}
+
+// text-align -------------------------------------------------------------------
+.ta-left {
+  text-align: left;
+}
+
+.ta-center {
+  text-align: center;
+}
+
+.ta-right {
+  text-align: right;
+}
+
+// 转换相关 ------------------------------------------------------------------
+.reverse {
+  transform-origin: center center;
+  transform: rotate(180deg);
+}
+
+// flex -------------------------------------------------------------------
+// 基础
+.d-flex {
+  display: flex;
+}
+
+.fd-column {
+  flex-direction: column;
+}
+
+.fw-wrap {
+  flex-wrap: wrap;
+}
+
+// flex填充
+.f-1 {
+  flex: 1;
+}
+
+.f-2 {
+  flex: 2;
+}
+
+.f-3 {
+  flex: 3;
+}
+
+// 主轴
+.jc-start {
+  justify-content: flex-start;
+}
+
+.jc-center {
+  justify-content: center;
+}
+
+.jc-end {
+  justify-content: flex-end;
+}
+
+.jc-around {
+  justify-content: space-around;
+}
+
+.jc-between {
+  justify-content: space-between;
+}
+
+// 交叉轴单行
+.ai-start {
+  align-items: flex-start;
+}
+
+.ai-center {
+  align-items: center;
+}
+
+.ai-end {
+  align-items: flex-end;
+}
+
+// 水平垂直居中
+.flex-center {
+  @extend .d-flex,
+  .jc-center,
+  .ai-center;
+}
+
+// 水平两端靠齐, 垂直居中
+.flex-between {
+  @extend .d-flex,
+  .jc-between,
+  .ai-center;
+}
+
+// 水平平均分配, 垂直居中
+.flex-around {
+  @extend .d-flex,
+  .jc-around,
+  .ai-center;
+}
+
+// 边框 -----------------------------------------------------------------------
+@each $colorKey,
+$colorValue in $border-colors {
+  .bd-#{$colorKey} {
+    border: 1rpx solid $colorValue;
+  }
+
+  @each $directionKey,
+  $directionValue in $direction-type {
+    .b#{$directionKey}-#{$colorKey} {
+      border-#{$directionValue}: 1rpx solid $colorValue;
+    }
+  }
+}
+
+// line-height -----------------------------------------------------------------
+@each $lhKey,
+$lhValue in $line-height {
+  .lh-#{$lhKey} {
+    line-height: $lhValue;
+  }
+}
+
+// 字体尺寸  -------------------------------------------------------------------
+@each $key,
+$value in $font-size {
+  .fs-#{$key} {
+    font-size: $value;
+  }
+}
+
+// 字体/背景颜色  ---------------------------------------------------------------
+@each $key,
+$value in $colors {
+  .c-#{$key} {
+    color: $value;
+  }
+
+  .bgc-#{$key} {
+    background-color: $value;
+  }
+}
+
+// 内外边距  -------------------------------------------------------------------
+@each $typeKey,
+$typeValue in $spacing-type {
+
+  // m-0/p-0
+  @each $sizeKey,
+  $sizeValue in $spacing-size {
+    .#{$typeKey}-#{$sizeKey} {
+      #{$typeValue}: $sizeValue;
+    }
+  }
+
+  // mx-0/my-0
+  @each $sizeKey,
+  $sizeValue in $spacing-size {
+    .#{$typeKey}x-#{$sizeKey} {
+      #{$typeValue}-left: $sizeValue;
+      #{$typeValue}-right: $sizeValue;
+    }
+
+    .#{$typeKey}y-#{$sizeKey} {
+      #{$typeValue}-top: $sizeValue;
+      #{$typeValue}-bottom: $sizeValue;
+    }
+  }
+
+  // mt-0/pb-0
+  @each $directionKey,
+  $directionValue in $direction-type {
+
+    @each $sizeKey,
+    $sizeValue in $spacing-size {
+      .#{$typeKey}#{$directionKey}-#{$sizeKey} {
+        #{$typeValue}-#{$directionValue}: $sizeValue;
+      }
+    }
+  }
+}

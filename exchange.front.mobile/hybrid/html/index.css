@@ -1,0 +1,83 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  background-color: #191a2c;
+  padding: 24vw 0 14vw 0;
+  position: relative;
+}
+
+#chart {
+  height: 100%;
+}
+
+.market {
+  height: 24vw;
+  width: 100%;
+  padding: 4vw;
+  box-sizing: border-box;
+  line-height: 1;
+  background-color: #171b2c;
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.market .left {
+  font-size: 8vw;
+}
+
+.market .right {
+  font-size: 3.2vw;
+  color: #c4c8d8;
+}
+
+.market .right>div {
+  margin-bottom: 3vw;
+  min-width: 40vw;
+  display: flex;
+  justify-content: space-between;
+}
+
+.c-green {
+  color: #11b997;
+}
+
+.c-red {
+  color: #d41136;
+}
+
+.button {
+  height: 14vw;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+}
+
+.button>div {
+  width: 50%;
+  line-height: 14vw;
+  text-align: center;
+  color: #fff;
+}
+
+.buy {
+  background-color: #11b997;
+}
+
+.sell {
+  background-color: #d41136;
+}

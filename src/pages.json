@@ -6,12 +6,57 @@
   },
   "pages": [
     {
-      "path": "pages/index/index",
+      "path": "pages/home/home",
       "style": {
-        "navigationBarTitleText": "uni-app"
+      }
+    },
+    {
+      "path": "pages/movie/movie",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/recharge/recharge",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationStyle": "custom"  
+      }
+    },
+    {
+      "path": "pages/live-room/live-room",
+      "style": {
+        "navigationStyle": "custom"  
       }
     }
   ],
+  "tabBar": {
+    "color": "#4A4A4A",
+    "selectedColor": "#4A4A4A",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/movie/movie",
+        "text": "电影"
+      },
+      {
+        "pagePath": "pages/recharge/recharge",
+        "text": "储值"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uni-app",

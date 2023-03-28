@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>行情</title>
+    <!-- Fix for iOS Safari zooming bug -->
+    <meta
+      name="viewport"
+      content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"
+    />
+    <meta charset="utf-8" />
+    <!-- 样式 -->
+    <link rel="stylesheet" href="index.css" />
+    <!-- uni的sdk -->
+    <script src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script>
+    <!-- http请求 -->
+    <script src="./lib/axios.min.js"></script>
+    <!--图表库js-->
+    <script src="./charting_library/charting_library.min.js"></script>
+    <!-- 工具包 -->
+    <script src="./js/utils.js"></script>
+    <!-- 变量包 -->
+    <script src="./js/variable.js"></script>
+    <!--封装了一个发布订阅模式-->
+    <script src="./lib/event.js"></script>
+    <!--websocket-->
+    <script src="./lib/websocket.js"></script>
+    <!-- 图表数据获取 -->
+    <script src="./js/datafeed.js"></script>
+    <!--图表配置-->
+    <script src="./js/chartConfig.js"></script>
+    <!-- i18n -->
+    <script src="./js/i18h.js"></script>
+  </head>
+
+  <body>
+    <div class="market">
+      <div class="left">
+        <span class="close c-green">0.00</span>
+      </div>
+      <div class="right">
+        <div class="high">
+          <span class="title">high</span>
+          <span class="num">0.00</span>
+        </div>
+        <div class="low">
+          <span class="title">low</span>
+          <span class="num">0.00</span>
+        </div>
+        <div class="amount">
+          <span class="title">amount</span>
+          <span class="num">0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="chart"></div>
+    <div class="button">
+      <div class="buy">
+        buy
+      </div>
+      <div class="sell">
+        sell
+      </div>
+    </div>
+    <!--页面总统js 初始化图表库 绑定点击事件等-->
+    <script src="./index.js"></script>
+  </body>
+</html>

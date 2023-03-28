@@ -1,0 +1,14 @@
+page {
+  background-color: map-get($colors, "white");
+  color: map-get($colors, "text");
+  font-size: 32rpx;
+  font-family: "PingFang-SC-Regular", Arial, Microsoft YaHei, Tahoma, sans-serif;
+  line-height: 1;
+}
+
+view,
+text,
+input,
+button {
+  box-sizing: border-box;
+}

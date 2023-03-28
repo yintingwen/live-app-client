@@ -1,0 +1,435 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/home/notice/list",
+      "style": {}
+    },
+    {
+      "path": "pages/home/notice/detail",
+      "style": {}
+    },
+    {
+      "path": "pages/legal/deal",
+      "style": {
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue752",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "40rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/legal/record/user",
+      "style": {
+        "enablePullDownRefresh": true,
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue714",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "40rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/legal/record/seller",
+      "style": {
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/legal/detail",
+      "style": {}
+    },
+    {
+      "path": "pages/lever/index"
+    },
+    {
+      "path": "pages/lever/check",
+      "style": {
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "+",
+                "fontSize": "52rpx",
+                "float": "right"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/mine/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/mine/authentication/index",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/oneLever/index",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/oneLever/uploadIdCard",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/oneLever/verified",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/twoLever/index",
+      "style": {
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue622",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "44rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/mine/authentication/twoLever/addReceivingAccount",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/twoLever/addBankCard",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/twoLever/addWeChat",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/twoLever/addAlipay",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/authentication/threeLever/index",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/securityCenter/index",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/securityCenter/changeLogin",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/mine/securityCenter/changeFund",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/mine/fundsTransfer/index",
+      "style": {
+        "navigationBarBackgroundColor": "#4f5cd1",
+        "navigationBarTextStyle": "white",
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue61f",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "40rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/mine/fundsTransfer/record",
+      "style": {
+        "navigationBarBackgroundColor": "#4f5cd1",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/mine/exchange/index",
+      "style": {
+        "navigationBarBackgroundColor": "#4f5cd1",
+        "navigationBarTextStyle": "white",
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue61f",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "40rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/mine/exchange/record",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/asset/index",
+      "style": {
+        "navigationBarBackgroundColor": "#4f5cd1",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/mine/asset/currencyDetail",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/management/index",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/management/record",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/management/chargeCoin",
+      "style": {
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue61f",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "40rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/mine/management/mentionCoin/index",
+      "style": {
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue61f",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "40rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/mine/management/mentionCoin/mentionAddress",
+      "style": {
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue622",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "44rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/mine/management/mentionCoin/addAddress",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/promotion/index",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/system/index",
+      "style": {
+        "navigationBarTitleText": "系统设置"
+      }
+    },
+    {
+      "path": "pages/mine/system/language",
+      "style": {}
+    },
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/login/register",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/login/password",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/login/forget",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/mine/shop/list",
+      "style": {}
+    },
+    {
+      "path": "pages/mine/shop/detail/seller",
+      "style": {
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/mine/shop/detail/user",
+      "style": {
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/home/kline",
+      "style": {
+        "navigationBarBackgroundColor": "#191a2c",
+        "navigationBarTextStyle": "white",
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "text": "\ue752",
+                "fontSrc": "/static/font/iconfont.ttf",
+                "fontSize": "40rpx"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/home/account",
+      "style": {}
+    },
+    {
+      "path": "pages/home/help/index",
+      "style": {}
+    },
+    {
+      "path": "pages/currency/deal",
+      "style": {}
+    },
+    {
+      "path": "pages/home/help/detail",
+      "style": {}
+    },
+    {
+      "path": "pages/home/reward",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/home/information",
+      "style": {
+        "navigationBarBackgroundColor": "#4f5cd1",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/download/download",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "tabBar": {
+    "color": "#a2a6a5",
+    "selectedColor": "#395CEC",
+    "backgroundColor": "white",
+    "iconWidth": "18px",
+    "borerStyle": "#E1E1E1",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "static/image/tabBar/home.png",
+        "selectedIconPath": "static/image/tabBar/home@actived.png"
+      },
+      {
+        "pagePath": "pages/legal/deal",
+        "text": "法币",
+        "iconPath": "static/image/tabBar/legal.png",
+        "selectedIconPath": "static/image/tabBar/legal@actived.png"
+      },
+      {
+        "pagePath": "pages/lever/index",
+        "text": "合约",
+        "iconPath": "static/image/tabBar/lever.png",
+        "selectedIconPath": "static/image/tabBar/lever@actived.png"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的",
+        "iconPath": "static/image/tabBar/mine.png",
+        "selectedIconPath": "static/image/tabBar/mine@actived.png"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F8F8F8"
+  },
+  "condition": { //模式配置，仅开发期间生效
+    "current": 0, //当前激活的模式（list 的索引项）
+    "list": [
+      {
+        "name": "", //模式名称
+        "path": "pages/mine/index", //启动页面，必选
+        "query": "" //启动参数，在页面的onLoad函数里面得到
+      }
+    ]
+  }
+}

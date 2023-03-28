@@ -1,0 +1,31 @@
+// 尺寸
+@mixin size($w, $h, $type: rpx) {
+  width: $w + $type;
+  height: $h + $type;
+}
+
+// 吸顶
+@mixin fixed-header($height: null) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+
+  @if ($height !=null) {
+    height: $height;
+  }
+}
+
+// 吸底
+@mixin fixed-footer($height: null) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+
+  @if ($height !=null) {
+    height: $height;
+  }
+}

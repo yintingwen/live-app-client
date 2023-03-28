@@ -1,0 +1,7 @@
+export const LANGUAGE = 'LANGUAGE'
+export const LOGIN_STATUS = 'LOGIN_STATUS'
+export const FULL_LOADING = 'FULL_LOADING'
+export const MOBILE_SMS = 'MOBILE_SMS'
+export const EMAIL_SMS = 'EMAIL_SMS'
+export const FORGET_SMS = 'FORGET_SMS'
+export const SETTINES = 'SETTINGS'
