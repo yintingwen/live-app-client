@@ -1,5 +1,7 @@
 <template>
-    <view class="test"></view>
+    <view class="live-room">
+      <list></list>
+    </view>
 </template>
 
 <script setup>
