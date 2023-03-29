@@ -15,4 +15,8 @@ export default {
 <style lang="scss">
 @import "uview-plus/index.scss";
 /*每个页面公共css */
+page {
+  height: 100%;
+  width: 100%;
+}
 </style>
