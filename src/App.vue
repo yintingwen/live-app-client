@@ -1,15 +1,14 @@
-<script>
-export default {
-  onLaunch: function () {
-    console.log('App Launch')
-  },
-  onShow: function () {
-    console.log('App Show')
-  },
-  onHide: function () {
-    console.log('App Hide')
-  },
-}
+<script setup>
+import { onReady } from '@dcloudio/uni-app'
+import { userSystemStore } from '@stores/system'
+import { useUserStore } from '@stores/user'
+const system = userSystemStore()
+const user = useUserStore()
+
+onReady(() => {
+  system.getSystemInfo()
+  user.getUserInfo()
+})
 </script>
 
 <style lang="scss">

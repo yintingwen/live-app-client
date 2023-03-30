@@ -5,6 +5,19 @@
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,
+    "h5": {
+      "devServer": {
+        "proxy": {
+          "/api": {
+            "target": "http://121.62.18.249:8020",
+            "changeOrigin": true,
+            "pathRewrite": {
+              "^/api": "/"
+            }
+          }
+        }
+      }
+    },
     /* 5+App特有相关 */
     "app-plus" : {
         "usingComponents" : true,

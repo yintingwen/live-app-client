@@ -12,7 +12,7 @@
         <view :style="{ height: navHeight + 'px' }"></view>
       </view>
     </view>
-    <view :class="['custom-page-body', className]" :style="style">
+    <view :class="['custom-page-body']" :style="style">
       <slot></slot>
     </view>
     <u-safe-bottom v-if="!isSwitchPage"></u-safe-bottom>

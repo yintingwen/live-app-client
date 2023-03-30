@@ -1,0 +1,36 @@
+<template>
+  <list
+    :style="liveRoomStyle"
+    :pagingEnabled="true"
+    :offset-accuracy="liveRoomStyle.height"
+    :show-scrollbar="true"
+  >
+    <cell class="test" :style="liveRoomStyle" v-for="item in 4">
+      <LiveRoomItem :style="liveRoomStyle" />
+    </cell>
+  </list>
+</template>
+
+<script setup>
+import { userSystemStore } from '@stores/system'
+import { computed } from 'vue'
+import LiveRoomItem from './components/LiveRoomItem'
+const system = userSystemStore()
+
+// 单个直播间的样式
+const liveRoomStyle = computed(() => {
+  return {
+    height: system.screenHeight + 'px',
+    width: '750rpx',
+  }
+})
+</script>
+<style lang="scss" scoped>
+.live-room {
+  .live-room-list {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+  }
+}
+</style>
