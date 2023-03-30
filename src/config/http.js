@@ -1,4 +1,4 @@
-import httpToastConfg from "./httpToast"
+import httpToastConfg from "./apiToast"
 import { useUserStore } from '@stores/user'
 import Request from 'luch-request' 
 
@@ -9,15 +9,14 @@ const http = new Request({
   }
 })
 
-
 http.interceptors.request.use(
   (config) => {
     const user = useUserStore()
 
     if (import.meta.env.DEV) {
-      config.header[import.meta.env.VITE_TOKEN_HEAD_KEY] = `${import.meta.env.VITE_TOKEN_PREFIX} ${import.meta.env.VITE_TOKEN_TEST}`
+      config.header['kg-framework-auth'] = `bearer ${import.meta.env.VITE_TOKEN_TEST}`
     } else {
-      config.header[import.meta.env.VITE_TOKEN_HEAD_KEY] = `${import.meta.env.VITE_TOKEN_PREFIX} ${user.userToken || ''}`
+      config.header['kg-framework-auth'] = `bearer ${user.userToken || ''}`
     }
 
     return config
