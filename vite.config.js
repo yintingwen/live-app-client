@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite'
 import uni from '@dcloudio/vite-plugin-uni'
 import commonjs from '@rollup/plugin-commonjs'
+import postcssExcludeFiles from 'postcss-exclude-files';
 import UnoCSS from 'unocss/vite'
 import { resolve } from "path"
 
 export default defineConfig({
+  // publicDir: '/',
   transpileDependencies: ['uview-plus', 'luch-request'],
   resolve: { // 这里配置需要注意：Vite新版本resolve配置改为对象形式，如下：
     alias: [
@@ -39,6 +41,10 @@ export default defineConfig({
       {
         find: '@constants',
         replacement: resolve(__dirname, 'src/constants')
+      },
+      {
+        find: '@utils',
+        replacement: resolve(__dirname, 'src/utils')
       }
     ],
   },

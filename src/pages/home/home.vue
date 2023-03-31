@@ -1,17 +1,19 @@
 <template>
   <co-page>
-    <home-header 
-      :tabs="HOME_TABS" 
-      :tabActive="tabActive"
-      @tab-change="onTabChange"
-    />
+    <home-header :tabs="HOME_TABS" :tabActive="tabActive" @tab-change="onTabChange" />
     <view class="flex flex-wrap justify-between pl-13 pr-13">
-      <home-live-card 
-        v-for="item in liveStore.liveList" 
+      <home-live-card
+        class="mb-12"
+        v-for="(item, index) in liveStore.liveList"
         :key="item.id"
         :cover="item.titlePage"
+        :label="item.label"
+        :title="item.cardTitle"
+        @tap="onTapLive(index)"
       ></home-live-card>
     </view>
+    <video 
+    class="box-full" :controls="false" src="http://121.62.18.249:8080/play/ad3cf639c6cb43789c4a7db5edbc9776.flv" autoplay />
   </co-page>
 </template>
 
@@ -27,19 +29,19 @@ import { onLoad } from '@dcloudio/uni-app'
 const liveStore = useLiveStore()
 const tabActive = ref(1)
 
-function onTabChange(id) {
-  tabActive.value = id
-}
-
 onLoad(() => {
   liveStore.getLiveList()
 })
 
-</script>
-<style lang='scss' scoped>
-.live-card-list {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+function onTabChange(id) {
+  tabActive.value = id
 }
+
+function onTapLive (index) {
+  console.log(index);
+  liveStore.setLiveSlideList(index)
+  uni.navigateTo({ url: '/pages/live-room/live-room'})
+}
+</script>
+<style lang="scss" scoped>
 </style>
