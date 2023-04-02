@@ -1,37 +1,38 @@
 <template>
   <list
+    id="list"
     class="live-room"
     :style="liveRoomLayout"
     :pagingEnabled="true"
     :offset-accuracy="liveRoomLayout.height"
     :show-scrollbar="true"
-    @scroll="onLiveListScroll"
   >
     <cell
       v-for="(item, index) in liveStore.liveSlideList"
       :key="item.id"
       :style="liveRoomLayout"
       class="live-room-item"
-      @appear="onLiveRoomAppear(index)"
-      @disappear="onliveRoomDisappear(index)"
+      @appear="onLiveRoomAppear($event, item, index)"
+      @disappear="onliveRoomDisappear($event, item, index)"
     >
-      <image
-        v-if="liveCurrentIndex !== index"
-        mode="aspectFill"
-        :src="item.titlePage"
-        :style="liveRoomLayout"
-        :class="['live-room-page', liveCurrentIndex === index ? 'live-room-page-show' : '']"
-      ></image>
       <video
-        v-if="liveCurrentIndex == index"
-        class="live-room-player"
+        v-if="liveOpenIndex === index"
         :id="`video-${item.id}`"
         :src="`http://121.62.18.249:8080/play/ad3cf639c6cb43789c4a7db5edbc9776.flv`"
-        :autoplay="true"
         :controls="false"
         :style="liveRoomLayout"
+        :autoplay="liveOpenIndex === index"
+        :show-loading="false"
+        @play="onTapVideo(index)"
+        object-fit="contain"
       ></video>
-      <!-- </view> -->
+      <image
+        v-if="liveOpenIndex !== index || liveVideoLoading"
+        mode="aspectFill"
+        src="https://profile.csdnimg.cn/D/5/0/1_luoluoyang23"
+        :style="liveRoomLayout"
+        class="live-room-page"
+      ></image>
     </cell>
   </list>
 </template>
@@ -42,47 +43,56 @@ import { computed, ref } from 'vue'
 import LiveRoomItem from './components/LiveRoomItem'
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
-const system = userSystemStore()
+
+const systemStore = userSystemStore()
 const liveStore = useLiveStore()
 
-const liveCurrentIndex = ref(0)
-
-const liveRoomChange = debounce((index) => {
-  console.log('liveRoomChange')
-  liveCurrentIndex.value = index
-}, 500)
+const liveOpenIndex = ref(0)
+const liveVideoLoading = ref(false)
+let liveShowIndex = 0
+let appearDirection = ''
 
 // 单个直播间的布局
 const liveRoomLayout = computed(() => {
   return {
-    height: system.screenHeight + 'px',
+    height: systemStore.screenHeight + 'px',
     width: '750rpx',
   }
 })
 
-function onLiveListScroll(e) {}
-
-function onLiveRoomAppear(index) {
-  liveRoomChange(index)
+function onTapVideo(index) {
+  liveVideoLoading.value = false
 }
 
-function onliveRoomDisappear() {}
+function onLiveRoomAppear(e, item, index) {
+  liveShowIndex = index
+  appearDirection = e.direction
+}
 
-console.log(liveStore.liveSlideList)
+function onliveRoomDisappear(e, item, index) {
+  liveRoomChange(e, item, index)
+}
+
+const liveRoomChange = debounce((e, item, index) => {
+  if (appearDirection !== e.direction || liveShowIndex === liveOpenIndex.value) return
+
+  liveVideoLoading.value = true
+  liveOpenIndex.value = liveShowIndex
+}, 0)
 </script>
 <style lang="scss" scoped>
 .live-room {
   position: relative;
-  
+
   .live-room-item {
     position: relative;
+    background-color: #fff;
   }
 
   .live-room-page {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 99;
   }
 }
 </style>

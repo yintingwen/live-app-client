@@ -38,10 +38,10 @@ function onTabChange(id) {
 }
 
 function onTapLive (index) {
-  console.log(index);
   liveStore.setLiveSlideList(index)
   uni.navigateTo({ url: '/pages/live-room/live-room'})
 }
+
 </script>
 <style lang="scss" scoped>
 </style>

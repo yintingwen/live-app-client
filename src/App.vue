@@ -1,11 +1,11 @@
 <script setup>
-import { onReady } from '@dcloudio/uni-app'
+import { onLaunch } from '@dcloudio/uni-app'
 import { userSystemStore } from '@stores/system'
 import { useUserStore } from '@stores/user'
 const system = userSystemStore()
 const user = useUserStore()
 
-onReady(() => {
+onLaunch(() => {
   system.getSystemInfo()
   user.getUserInfo()
 })
