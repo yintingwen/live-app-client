@@ -3,9 +3,9 @@ import { ref, computed } from "vue";
 
 export const userSystemStore = defineStore('system', () => {
   const systemInfo = ref(null)
-  const screenHeight = computed(() => {
-    return getSystemInfo().screenHeight
-  })
+  
+  const devicePixelRatio = computed(() => getSystemInfo().devicePixelRatio)
+  const screenHeight = computed(() => getSystemInfo().screenHeight)
 
   function getSystemInfo () {
     if (systemInfo.value === null) {
@@ -17,6 +17,7 @@ export const userSystemStore = defineStore('system', () => {
   return {
     systemInfo,
     screenHeight,
+    devicePixelRatio,
     getSystemInfo
   }
 })
