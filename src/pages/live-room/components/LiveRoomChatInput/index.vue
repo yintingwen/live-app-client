@@ -1,31 +1,33 @@
 <template>
-  <view
-    id="live-room-chat"
-    class="live-room-chat-input-container" 
-    :style="containerStyle" 
-    @transitionend="onTransitionEnd"
-    @tap.stop="() => {}"
-  >
-    <view class="live-room-chat-input">
-      <input
-        class="chat-input"
-        :value="text"
-        :cursor-spacing="liveInputCursor"
-        placeholder="说点什么..."
-        ref="input"
-        :adjust-position="false"
-        @blur="onInputBlur"
-        @change="emits('update:text', $event.detail.value)"
-      />
-      <view class="send-btn" @tap.stop="onTapSend">
-        <text class="send-btn-text">发送</text>
+  <!-- <u-transition :show="show"> -->
+    <view
+      id="live-room-chat"
+      class="live-room-chat-input-container"
+      :style="containerStyle"
+      @transitionend="onTransitionEnd"
+      @tap.stop="() => {}"
+    >
+      <view class="live-room-chat-input">
+        <input
+          class="chat-input"
+          :value="text"
+          :cursor-spacing="liveInputCursor"
+          placeholder="说点什么..."
+          ref="input"
+          :adjust-position="false"
+          @blur="onInputBlur"
+          @change="emits('update:text', $event.detail.value)"
+        />
+        <view class="send-btn" @tap.stop="onTapSend">
+          <text class="send-btn-text">发送</text>
+        </view>
       </view>
+      <u-safe-bottom></u-safe-bottom>
     </view>
-    <u-safe-bottom></u-safe-bottom>
-  </view>
+  <!-- </u-transition> -->
 </template>
 <script setup>
-import { ref, defineEmits, computed, defineProps, watch } from 'vue'
+import { ref, defineEmits, computed, defineProps, watch, onBeforeUnmount } from 'vue'
 import { userSystemStore } from '@stores/system'
 const emits = defineEmits(['blur', 'send', 'update:text', 'undate:show'])
 const props = defineProps({
@@ -44,7 +46,9 @@ const containerStyle = computed(() => ({
 }))
 const liveInputCursor = 40 / systemStore.devicePixelRatio
 
-watch(() => props.show,(val) => {
+watch(
+  () => props.show,
+  (val) => {
     if (val) {
       input.value.focus()
     } else {
@@ -53,23 +57,32 @@ watch(() => props.show,(val) => {
   }
 )
 
-uni.onKeyboardHeightChange((res) => {
+function onKeyboardHeightChange(res) {
+  console.log(res);
   if (res.height) {
-    uni.createSelectorQuery().select('#live-room-chat').boundingClientRect((searchBarBoundRect) => {
-      inputTop.value = systemStore.screenHeight - res.height - searchBarBoundRect.height
-    }).exec()
+    uni
+      .createSelectorQuery()
+      .select('#live-room-chat')
+      .boundingClientRect((searchBarBoundRect) => {
+        console.log(searchBarBoundRect);
+        inputTop.value = systemStore.screenHeight - res.height - searchBarBoundRect.height
+      })
+      .exec()
   } else {
     inputTop.value = systemStore.screenHeight
   }
-})
+}
 
 function onInputBlur() {
   emits('blur')
 }
 
-function onTapSend () {
+function onTapSend() {
   emits('send')
 }
+
+uni.onKeyboardHeightChange(onKeyboardHeightChange)
+onBeforeUnmount(() => uni.offKeyboardHeightChange(onKeyboardHeightChange))
 </script>
 <style lang="scss">
 .live-room-chat-input-container {
@@ -77,7 +90,7 @@ function onTapSend () {
   position: fixed;
   left: 0;
   width: 750rpx;
-  transition: top 0.1s linear;
+  transition: top 0.15s;
 
   .live-room-chat-input {
     display: flex;

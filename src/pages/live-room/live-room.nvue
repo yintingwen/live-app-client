@@ -2,10 +2,10 @@
   <list
     id="list"
     class="live-room"
-    :style="liveRoomLayout"
     :pagingEnabled="true"
-    :offset-accuracy="liveRoomLayout.height"
+    :offset-accuracy="1"
     :show-scrollbar="false"
+    @scroll="onListScroll"
   >
     <cell
       v-for="(item, index) in liveStore.liveSlideList"
@@ -50,6 +50,7 @@
           </view>
           <u-safe-bottom></u-safe-bottom>
         </view>
+        <LiveRoomCharRoom v-if="index === liveShowIndex" />
     </cell>
   </list>
   <live-room-chat-input
@@ -64,6 +65,7 @@
 import { userSystemStore } from '@stores/system'
 import { computed, ref } from 'vue'
 import LiveRoomChatInput from './components/LiveRoomChatInput'
+import LiveRoomCharRoom from './components/LiveRoomChatRoom'
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
 
@@ -117,6 +119,10 @@ function onChatInputBlur(isEmit) {
   // }
   liveChatInputShow.value = false
 }
+
+function onListScroll (e) {
+  console.log(e);
+}
 </script>
 <style lang="scss" scoped>
 .bottom-fixed {
@@ -126,6 +132,7 @@ function onChatInputBlur(isEmit) {
   width: 750rpx;
 }
 .live-room {
+  flex: 1;
   position: relative;
 
   .live-room-container {
