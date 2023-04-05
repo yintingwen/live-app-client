@@ -6,7 +6,7 @@ import UnoCSS from 'unocss/vite'
 import { resolve } from "path"
 
 export default defineConfig({
-  transpileDependencies: ['uview-plus', 'luch-request'],
+  transpileDependencies: ['uview-plus', 'luch-request', '@dcloudio/uni-ui'],
   resolve: { // 这里配置需要注意：Vite新版本resolve配置改为对象形式，如下：
     alias: [
       {

@@ -1,5 +1,6 @@
 <template>
-  <list 
+  <list
+		:fixFreezing="true"
     class="live-room-chat-room" 
     ref="listRef"
   >
@@ -37,11 +38,20 @@ const list = ref([
     { text: '12312312233', level: 2 },
     { text: '12312312233', level: 2 }
 ])
-onMounted(() => {
+
+function onTap () {
+  console.log(listRef.value.setSpecialEffects);
   listRef.value.setSpecialEffects({
     id:"list",
-    headerHeight: 200
+    headerHeight: 2000
   })
+}
+
+onMounted(() => {
+	listRef.value.setSpecialEffects({
+	  id:"list",
+	  headerHeight: 800
+	})
 })
 
 </script>
@@ -55,7 +65,6 @@ onMounted(() => {
   left: 24rpx;
   z-index: 1;
   display: flex;
-  flex-direction: row;
 
   .chat-item {
 		width: 200rpx;

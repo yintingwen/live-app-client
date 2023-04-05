@@ -12,8 +12,6 @@
         @tap="onTapLive(index)"
       ></home-live-card>
     </view>
-    <video 
-    class="box-full" :controls="false" src="http://121.62.18.249:8080/play/ad3cf639c6cb43789c4a7db5edbc9776.flv" autoplay />
   </co-page>
 </template>
 

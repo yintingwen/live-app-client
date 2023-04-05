@@ -2,9 +2,11 @@
   <list
     id="list"
     class="live-room"
+    :style="liveRoomLayout"
     :pagingEnabled="true"
     :offset-accuracy="1"
     :show-scrollbar="false"
+	:fixFreezing="true"
     @scroll="onListScroll"
   >
     <cell
@@ -29,13 +31,13 @@
           @tap="() => {}"
           @play="onVideoPlay($event, index)"
         ></video>
-        <image
+    <!--    <image
           v-if="liveOpenIndex !== index || liveVideoLoading"
           mode="aspectFill"
           src="https://profile.csdnimg.cn/D/5/0/1_luoluoyang23"
           :style="liveRoomLayout"
           class="live-room-page"
-        ></image>
+        ></image> -->
         <view v-if="!liveChatInputShow" class="live-room-footer bottom-fixed">
           <view class="footer-operation">
             <view class="footer-input" @tap.stop="onTapChat">
@@ -50,7 +52,10 @@
           </view>
           <u-safe-bottom></u-safe-bottom>
         </view>
-        <LiveRoomCharRoom v-if="index === liveShowIndex" />
+        <LiveRoomCharRoom 
+          v-if="liveOpenIndex === index" 
+          :style="{ bottom: liveChatRoomBottom + 'px'}"
+        />
     </cell>
   </list>
   <live-room-chat-input
@@ -59,6 +64,9 @@
     ref="liveChatInputRef"
     @blur="onChatInputBlur(true)"
   />
+  <view v-if="liveRoomShowAnimation" class="live-room-animation" :style="liveRoomLayout">
+    <l-svga ></l-svga>
+  </view>
 </template>
 
 <script setup>
@@ -77,6 +85,8 @@ const liveVideoLoading = ref(false)
 const liveChatInputShow = ref(false)
 const liveChatInputRef = ref(null)
 const liveChatInputText = ref('')
+const liveChatRoomBottom = ref((systemStore.screenWidth / 750) * 168)
+const liveRoomShowAnimation = ref(false)
 
 let liveShowIndex = 0
 let appearDirection = ''
@@ -95,6 +105,7 @@ function onVideoPlay(e) {
 }
 // 直播间出现事件
 function onLiveRoomAppear(e, item, index) {
+  console.log(index, 'appear');
   liveShowIndex = index
   appearDirection = e.direction
 }
@@ -132,7 +143,7 @@ function onListScroll (e) {
   width: 750rpx;
 }
 .live-room {
-  flex: 1;
+  // flex: 1;
   position: relative;
 
   .live-room-container {
@@ -181,5 +192,10 @@ function onListScroll (e) {
       background-color: salmon;
     }
   }
+}
+.live-room-animation {
+	position: fixed;
+	top: 0;
+	left: 0;
 }
 </style>
