@@ -21,6 +21,7 @@ export const useLiveStore = defineStore('live', () => {
     // list.splice(index, 1)
     list.unshift(target)
 	list.unshift(liveList.value[0])
+  list.unshift(liveList.value[1])
     // for (let i = 100; i > 0; i--) {
     //   const push = { ...list[0], id: list[0].id + 100 }
     //   list.push(push)

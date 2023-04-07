@@ -1,16 +1,16 @@
 <template>
   <list
-    id="list"
+    :id="listId"
     class="live-room"
     :style="liveRoomLayout"
     :pagingEnabled="true"
     :offset-accuracy="1"
     :show-scrollbar="false"
-	:fixFreezing="true"
+	  :fixFreezing="true"
     @scroll="onListScroll"
   >
     <cell
-      v-for="(item, index) in liveStore.liveSlideList"
+      v-for="(item, index) in liveRoomRenderList"
       class="live-room-container"
       :key="item.id"
       :style="liveRoomLayout"
@@ -31,13 +31,13 @@
           @tap="() => {}"
           @play="onVideoPlay($event, index)"
         ></video>
-    <!--    <image
+       <image
           v-if="liveOpenIndex !== index || liveVideoLoading"
           mode="aspectFill"
           src="https://profile.csdnimg.cn/D/5/0/1_luoluoyang23"
           :style="liveRoomLayout"
           class="live-room-page"
-        ></image> -->
+        ></image>
         <view v-if="!liveChatInputShow" class="live-room-footer bottom-fixed">
           <view class="footer-operation">
             <view class="footer-input" @tap.stop="onTapChat">
@@ -54,7 +54,10 @@
         </view>
         <LiveRoomCharRoom 
           v-if="liveOpenIndex === index" 
-          :style="{ bottom: liveChatRoomBottom + 'px'}"
+          ref="liveChatRoomRef"
+          :style="liveRoomChatStyle"
+          @touchstart.stop="onChatRoomTouchStart"
+          @loadmore="onChatRoomLoadMore"
         />
     </cell>
   </list>
@@ -80,16 +83,24 @@ import { debounce } from '@utils/common'
 const systemStore = userSystemStore()
 const liveStore = useLiveStore()
 
+let liveShowIndex = 0
+let appearDirection = ''
+let liveRoomChatBastBottom = (systemStore.screenWidth / 750) * 168
+
+
+const listId = ref('live-room-list')
+
+const liveChatRoomRef = ref(null)
+const liveChatRoomScrollOpen = ref(false)
+const liveChatRoomScroll = ref(null)
+
 const liveOpenIndex = ref(0)
 const liveVideoLoading = ref(false)
 const liveChatInputShow = ref(false)
 const liveChatInputRef = ref(null)
 const liveChatInputText = ref('')
-const liveChatRoomBottom = ref((systemStore.screenWidth / 750) * 168)
+const liveChatRoomBottom = ref(liveRoomChatBastBottom)
 const liveRoomShowAnimation = ref(false)
-
-let liveShowIndex = 0
-let appearDirection = ''
 
 // 单个直播间的布局
 const liveRoomLayout = computed(() => {
@@ -98,14 +109,22 @@ const liveRoomLayout = computed(() => {
     width: '750rpx',
   }
 })
+const liveRoomRenderList = computed(() => {
+  const endIndex = liveChatRoomScrollOpen.value ? liveOpenIndex.value + 1 : liveStore.liveSlideList.length
+  return liveStore.liveSlideList.slice(0, endIndex)
+})
+const liveRoomChatStyle = computed(() => ({
+  bottom: liveChatRoomBottom.value + 'px', 
+  position: 'fixed'
+}))
+
 // video 播放事件
 function onVideoPlay(e) {
-  console.log(e)
   liveVideoLoading.value = false
+  liveChatRoomBottom.value = liveRoomChatBastBottom
 }
 // 直播间出现事件
 function onLiveRoomAppear(e, item, index) {
-  console.log(index, 'appear');
   liveShowIndex = index
   appearDirection = e.direction
 }
@@ -125,13 +144,27 @@ function onTapChat() {
   liveChatInputShow.value = true
 }
 function onChatInputBlur(isEmit) {
-  // if (!isEmit) {
-  //   liveChatInputRef.value.blur()
-  // }
   liveChatInputShow.value = false
+  liveChatRoomScrollOpen.value = false
+  liveChatRoomRef.value[0].clearSetSpecialEffects()
+  console.log(liveRoomChatStyle.value.position);
+  console.log('?');
+}
+
+function onLiveRoomTouchStart () {
+  console.log('onLiveRoomTouchStart');
 }
 
 function onListScroll (e) {
+  liveChatRoomBottom.value = (Math.abs(e.contentOffset.y) - systemStore.screenHeight * liveOpenIndex.value) + liveRoomChatBastBottom
+}
+
+function onChatRoomTouchStart () {
+  console.log('onChatRoomTouchStart');
+  // liveChatRoomRef.value[0].setSpecialEffects(listId.value)
+}
+
+function onChatRoomLoadMore (e) {
   console.log(e);
 }
 </script>

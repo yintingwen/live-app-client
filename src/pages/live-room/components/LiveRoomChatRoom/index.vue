@@ -1,8 +1,9 @@
 <template>
   <list
-		:fixFreezing="true"
     class="live-room-chat-room" 
+		:fixFreezing="true"
     ref="listRef"
+    @loadmore="onLoadMore"
   >
     <cell v-for="item in list" class="chat-item">
       <image
@@ -14,8 +15,14 @@
 
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, defineExpose, defineEmits } from 'vue'
 
+defineExpose({
+  setSpecialEffects,
+  clearSetSpecialEffects
+})
+
+const emit = defineEmits(['loadmore'])
 const listRef = ref(null)
 // const props = defineProps({
 //   list: { type: Array, default: () => [
@@ -39,28 +46,30 @@ const list = ref([
     { text: '12312312233', level: 2 }
 ])
 
-function onTap () {
-  console.log(listRef.value.setSpecialEffects);
+function setSpecialEffects (id) {
+  console.log(id);
   listRef.value.setSpecialEffects({
-    id:"list",
-    headerHeight: 2000
+    id
   })
 }
 
-onMounted(() => {
-	listRef.value.setSpecialEffects({
-	  id:"list",
-	  headerHeight: 800
-	})
-})
+function clearSetSpecialEffects () {
+  listRef.value.setSpecialEffects({
+    id: ''
+  })
+  console.log('clear');
+}
 
+function onLoadMore (e) {
+  emit('loadmore', e)
+
+}
 </script>
 <style lang="scss">
 .live-room-chat-room {
   background-color: #fff;
   width: 536rpx;
   height: 520rpx;
-  position: absolute;
   bottom: 168rpx;
   left: 24rpx;
   z-index: 1;
