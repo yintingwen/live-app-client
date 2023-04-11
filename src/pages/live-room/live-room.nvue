@@ -6,11 +6,11 @@
     :pagingEnabled="true"
     :offset-accuracy="1"
     :show-scrollbar="false"
-	  :fixFreezing="true"
+    :fixFreezing="true"
     @scroll="onListScroll"
   >
     <cell
-      v-for="(item, index) in liveRoomRenderList"
+      v-for="(item, index) in liveStore.liveSlideList"
       class="live-room-container"
       :key="item.id"
       :style="liveRoomLayout"
@@ -18,47 +18,39 @@
       @disappear="onliveRoomDisappear($event, item, index)"
       @tap="onChatInputBlur(false)"
     >
-        <video
-          v-if="liveOpenIndex === index"
-          :id="`video-${item.id}`"
-          :src="`http://121.62.18.249:8080/play/ad3cf639c6cb43789c4a7db5edbc9776.flv`"
-          :controls="false"
-          :style="liveRoomLayout"
-          :autoplay="liveOpenIndex === index"
-          :is-live="true"
-          :enable-progress-gesture="false"
-          object-fit="cover"
-          @tap="() => {}"
-          @play="onVideoPlay($event, index)"
-        ></video>
-       <image
-          v-if="liveOpenIndex !== index || liveVideoLoading"
-          mode="aspectFill"
-          src="https://profile.csdnimg.cn/D/5/0/1_luoluoyang23"
-          :style="liveRoomLayout"
-          class="live-room-page"
-        ></image>
-        <view v-if="!liveChatInputShow" class="live-room-footer bottom-fixed">
-          <view class="footer-operation">
-            <view class="footer-input" @tap.stop="onTapChat">
-              <image
-                class="footer-input-icon"
-                src="/static/images/live-room/chat_icon.png"
-                mode="scaleToFill"
-              />
-              <text class="footer-input-text">说点什么...</text>
-            </view>
-            <view class="footer-button">2</view>
+      <video
+        v-if="liveOpenIndex === index"
+        :id="`video-${item.id}`"
+        :src="`http://121.62.18.249:8080/play/ad3cf639c6cb43789c4a7db5edbc9776.flv`"
+        :controls="false"
+        :style="liveRoomLayout"
+        :autoplay="true"
+        :is-live="true"
+        :enable-progress-gesture="false"
+        object-fit="cover"
+        @tap="() => {}"
+        @play="onVideoPlay($event, index)"
+      ></video>
+      <LiveRoomCover v-if="liveOpenIndex !== index || liveVideoLoading" />
+      <view v-if="liveOpenIndex === index &&!liveChatInputShow && !liveVideoLoading" class="live-room-footer bottom-fixed">
+        <view class="footer-operation">
+          <view class="footer-input" @tap.stop="onTapChat">
+            <image
+              class="footer-input-icon"
+              src="/static/images/live-room/chat_icon.png"
+              mode="scaleToFill"
+            />
+            <text class="footer-input-text">说点什么...</text>
           </view>
-          <u-safe-bottom></u-safe-bottom>
+          <view class="footer-button">2</view>
         </view>
-        <LiveRoomCharRoom 
-          v-if="liveOpenIndex === index" 
-          ref="liveChatRoomRef"
-          :style="liveRoomChatStyle"
-          @touchstart.stop="onChatRoomTouchStart"
-          @loadmore="onChatRoomLoadMore"
-        />
+        <u-safe-bottom></u-safe-bottom>
+      </view>
+      <LiveRoomCharRoom
+        v-if="liveOpenIndex === index && !liveVideoLoading"
+        :list="chatRoomList"
+        :style="chatRoomStyle"
+      />
     </cell>
   </list>
   <live-room-chat-input
@@ -68,7 +60,7 @@
     @blur="onChatInputBlur(true)"
   />
   <view v-if="liveRoomShowAnimation" class="live-room-animation" :style="liveRoomLayout">
-    <l-svga ></l-svga>
+    <l-svga></l-svga>
   </view>
 </template>
 
@@ -76,7 +68,8 @@
 import { userSystemStore } from '@stores/system'
 import { computed, ref } from 'vue'
 import LiveRoomChatInput from './components/LiveRoomChatInput'
-import LiveRoomCharRoom from './components/LiveRoomChatRoom'
+import LiveRoomCharRoom from './components/LiveRoomChatRoom/index.vue'
+import LiveRoomCover from './components/LiveRoomCover'
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
 
@@ -87,12 +80,21 @@ let liveShowIndex = 0
 let appearDirection = ''
 let liveRoomChatBastBottom = (systemStore.screenWidth / 750) * 168
 
-
 const listId = ref('live-room-list')
 
-const liveChatRoomRef = ref(null)
+const chatRoomList = ref([
+  { text: '撒带教案数据库', level: 1, name: '1' },
+  { text: '撒带教案数据库', level: 1, name: '1' },
+  { text: '撒带教案数撒带教案数据库撒带撒带教案数撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库', level: 1, name: '1' },
+  { text: '撒带教案数据库', level: 1, name: '1' },
+  { text: '撒带教案数据库', level: 1, name: '1' },
+  { text: '撒带教案数据库', level: 1, name: '1' },
+  { text: '撒带教案数据库', level: 1, name: '1' },
+  { text: '撒带教案数据库', level: 1, name: '1' },
+  { text: '撒带教案数据库', level: 1, name: '1' },
+])
+
 const liveChatRoomScrollOpen = ref(false)
-const liveChatRoomScroll = ref(null)
 
 const liveOpenIndex = ref(0)
 const liveVideoLoading = ref(false)
@@ -103,19 +105,13 @@ const liveChatRoomBottom = ref(liveRoomChatBastBottom)
 const liveRoomShowAnimation = ref(false)
 
 // 单个直播间的布局
-const liveRoomLayout = computed(() => {
-  return {
-    height: systemStore.screenHeight + 'px',
-    width: '750rpx',
-  }
-})
-const liveRoomRenderList = computed(() => {
-  const endIndex = liveChatRoomScrollOpen.value ? liveOpenIndex.value + 1 : liveStore.liveSlideList.length
-  return liveStore.liveSlideList.slice(0, endIndex)
-})
-const liveRoomChatStyle = computed(() => ({
-  bottom: liveChatRoomBottom.value + 'px', 
-  position: 'fixed'
+const liveRoomLayout = computed(() => ({
+  height: systemStore.screenHeight + 'px',
+  width: '750rpx',
+}))
+// 聊天室的样式
+const chatRoomStyle = computed(() => ({
+  bottom: liveChatRoomBottom.value + 'px',
 }))
 
 // video 播放事件
@@ -143,29 +139,17 @@ const liveRoomChange = debounce((e, item, index) => {
 function onTapChat() {
   liveChatInputShow.value = true
 }
+// 聊天输入框失去焦点
 function onChatInputBlur(isEmit) {
   liveChatInputShow.value = false
   liveChatRoomScrollOpen.value = false
-  liveChatRoomRef.value[0].clearSetSpecialEffects()
-  console.log(liveRoomChatStyle.value.position);
-  console.log('?');
 }
-
-function onLiveRoomTouchStart () {
-  console.log('onLiveRoomTouchStart');
-}
-
-function onListScroll (e) {
-  liveChatRoomBottom.value = (Math.abs(e.contentOffset.y) - systemStore.screenHeight * liveOpenIndex.value) + liveRoomChatBastBottom
-}
-
-function onChatRoomTouchStart () {
-  console.log('onChatRoomTouchStart');
-  // liveChatRoomRef.value[0].setSpecialEffects(listId.value)
-}
-
-function onChatRoomLoadMore (e) {
-  console.log(e);
+// 页面滚动事件
+function onListScroll(e) {
+  liveChatRoomBottom.value =
+    Math.abs(e.contentOffset.y) -
+    systemStore.screenHeight * liveOpenIndex.value +
+    liveRoomChatBastBottom
 }
 </script>
 <style lang="scss" scoped>
@@ -182,12 +166,6 @@ function onChatRoomLoadMore (e) {
   .live-room-container {
     position: relative;
     background-color: #fff;
-  }
-
-  .live-room-page {
-    position: absolute;
-    top: 0;
-    left: 0;
   }
 }
 
@@ -227,8 +205,8 @@ function onChatRoomLoadMore (e) {
   }
 }
 .live-room-animation {
-	position: fixed;
-	top: 0;
-	left: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 </style>
