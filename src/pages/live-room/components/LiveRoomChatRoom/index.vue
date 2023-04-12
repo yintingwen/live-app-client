@@ -6,38 +6,62 @@
     :show-scrollbar="false"
   >
     <view class="chat-item">
-      <view class="chat-item-content chat-sys-item">
-        <text class="chat-item-text chat-sys-text">
-          提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播。
-        </text>
-      </view>
+      <text class="chat-item-text chat-sys-text">
+        提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播，提倡绿色文明直播。
+      </text>
     </view>
-    <view v-for="(item, index) in list" :id="`chat-${index}`">
-      <view class="chat-item chat-user-item">
+    <block v-for="(item, index) in list">
+      <view class="chat-item chat-user-item" :id="`chat-${index}`">
         <view class="chat-level">
           <view class="level-num">
             <text class="level-text">{{ item.level }}</text>
           </view>
           <image class="level-icon" src="/static/images/live-room/chat_room_level.png" />
         </view>
-        <view class="chat-item-content chat-user-item-text">
-          <text class="chat-item-text chat-sys-text">{{ item.name }}：</text>
-          <text class="chat-item-text chat-user-item-content">{{ item.text }}</text>
+        <view class="chat-user-text">
+          <rich-text :nodes="getRichNode(item)"></rich-text>
         </view>
       </view>
-    </view>
+    </block>
   </scroll-view>
 </template>
 <script setup>
+import CoText from '@/components/CoText'
 import { defineProps } from 'vue'
 
 defineProps({
   list: { type: Array, default: [] },
 })
+
+function getRichNode(params) {
+  return [
+    {
+      attrs: {
+        style: 'font-size: 26rpx;'
+      },
+      children: [
+        {
+          type: 'text',
+          text: params.name + '：',
+          attrs: {
+            style: 'color:#75dfff;'
+          }
+        },
+        {
+          type: 'text',
+          text: params.text,
+          attrs: {
+            style: 'color:#ffffff;'
+          }
+        },
+      ],
+    },
+  ]
+}
 </script>
 <style lang="scss">
 .live-room-chat-room {
-  position: fixed;
+  position: absolute;
   width: 536rpx;
   max-height: 520rpx;
   bottom: 168rpx;
@@ -59,59 +83,54 @@ defineProps({
     }
   }
 
-  .chat-item-content {
-  }
-
   .chat-sys-text {
     color: #75dfff;
     font-size: 26rpx;
   }
 
   .chat-user-item {
-    display: flex;
-    flex-direction: row;
-
-    .chat-user-item-text {
-      @extend .chat-user-item;
-
-      .chat-user-item-content {
-        color: #fff;
-      }
-    }
-  }
-
-  .chat-level {
     position: relative;
-    height: 42rpx;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding-left: 2rpx;
-    margin-right: 12rpx;
 
-    .level-icon {
-      height: 42rpx;
-      width: 42rpx;
+    .chat-level {
       position: absolute;
-      left: -5rpx;
-      z-index: 1;
+      left: 12rpx;
+      height: 42rpx;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-right: 12rpx;
+
+      .level-icon {
+        position: absolute;
+        height: 42rpx;
+        width: 42rpx;
+        left: -5rpx;
+        z-index: 1;
+      }
+
+      .level-num {
+        border-radius: 13rpx;
+        height: 26rpx;
+        width: 74rpx;
+        background-color: #1e6ff5;
+        border-top-left-radius: 13rpx;
+        border-top-right-radius: 13rpx;
+        border-bottom-left-radius: 13rpx;
+        border-bottom-right-radius: 13rpx;
+        padding-left: 26rpx;
+
+        .level-text {
+          line-height: 26rpx;
+          font-size: 20rpx;
+          text-align: center;
+          color: #fff;
+        }
+      }
     }
 
-    .level-num {
-      border-radius: 13rpx;
-      height: 26rpx;
-      width: 74rpx;
-      background-color: #1e6ff5;
-      border-top-left-radius: 13rpx;
-      border-top-right-radius: 13rpx;
-      border-bottom-left-radius: 13rpx;
-      border-bottom-right-radius: 13rpx;
-      padding-left: 26rpx;
-
-      .level-text {
-        text-align: center;
-        color: #fff;
-      }
+    .chat-user-text {
+      padding-left: 98rpx;
+      font-size: 26rpx;
     }
   }
 }

@@ -1,22 +1,18 @@
 <template>
-  <list
-    :id="listId"
+  <swiper
     class="live-room"
+    :vertical="true"
     :style="liveRoomLayout"
-    :pagingEnabled="true"
-    :offset-accuracy="1"
-    :show-scrollbar="false"
-    :fixFreezing="true"
-    @scroll="onListScroll"
+    :current="liveOpenIndex"
+    :skip-hidden-item-layout="true"
+    @change="onSwiperChange"
   >
-    <cell
+    <swiper-item
       v-for="(item, index) in liveStore.liveSlideList"
       class="live-room-container"
       :key="item.id"
       :style="liveRoomLayout"
-      @appear="onLiveRoomAppear($event, item, index)"
-      @disappear="onliveRoomDisappear($event, item, index)"
-      @tap="onChatInputBlur(false)"
+      @tap="onChatInputBlur"
     >
       <video
         v-if="liveOpenIndex === index"
@@ -32,33 +28,30 @@
         @play="onVideoPlay($event, index)"
       ></video>
       <LiveRoomCover v-if="liveOpenIndex !== index || liveVideoLoading" />
-      <view v-if="liveOpenIndex === index &&!liveChatInputShow && !liveVideoLoading" class="live-room-footer bottom-fixed">
-        <view class="footer-operation">
-          <view class="footer-input" @tap.stop="onTapChat">
-            <image
-              class="footer-input-icon"
-              src="/static/images/live-room/chat_icon.png"
-              mode="scaleToFill"
-            />
-            <text class="footer-input-text">说点什么...</text>
-          </view>
-          <view class="footer-button">2</view>
-        </view>
-        <u-safe-bottom></u-safe-bottom>
-      </view>
-      <LiveRoomCharRoom
-        v-if="liveOpenIndex === index && !liveVideoLoading"
-        :list="chatRoomList"
-        :style="chatRoomStyle"
+      <LiveRoomFooter
+        v-if="liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
+        class="bottom-fixed"
+        @tapInput="onTapChat"
+        @tapGift="onTapGift"
       />
-    </cell>
-  </list>
+      <LiveRoomCharRoom v-if="liveOpenIndex === index && !liveVideoLoading" :list="chatRoomList" />
+    </swiper-item>
+  </swiper>
   <live-room-chat-input
     v-model:text="liveChatInputText"
     v-model:show="liveChatInputShow"
     ref="liveChatInputRef"
     @blur="onChatInputBlur(true)"
   />
+  <u-popup 
+    :show="giftListShow" 
+    mode="bottom"  
+    @close="() => giftListShow = false" 
+  >
+    <view>
+      {{ JSON.stringify(liveStore.giftList) }}
+    </view>
+	</u-popup>
   <view v-if="liveRoomShowAnimation" class="live-room-animation" :style="liveRoomLayout">
     <l-svga></l-svga>
   </view>
@@ -67,25 +60,25 @@
 <script setup>
 import { userSystemStore } from '@stores/system'
 import { computed, ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import LiveRoomChatInput from './components/LiveRoomChatInput'
 import LiveRoomCharRoom from './components/LiveRoomChatRoom/index.vue'
 import LiveRoomCover from './components/LiveRoomCover'
+import LiveRoomFooter from './components/LiveRoomFooter'
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
 
 const systemStore = userSystemStore()
 const liveStore = useLiveStore()
 
-let liveShowIndex = 0
-let appearDirection = ''
-let liveRoomChatBastBottom = (systemStore.screenWidth / 750) * 168
-
-const listId = ref('live-room-list')
-
 const chatRoomList = ref([
   { text: '撒带教案数据库', level: 1, name: '1' },
   { text: '撒带教案数据库', level: 1, name: '1' },
-  { text: '撒带教案数撒带教案数据库撒带撒带教案数撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库', level: 1, name: '1' },
+  {
+    text: '撒带教案数撒带教案数据库撒带撒带教案数撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库',
+    level: 1,
+    name: '1',
+  },
   { text: '撒带教案数据库', level: 1, name: '1' },
   { text: '撒带教案数据库', level: 1, name: '1' },
   { text: '撒带教案数据库', level: 1, name: '1' },
@@ -93,49 +86,40 @@ const chatRoomList = ref([
   { text: '撒带教案数据库', level: 1, name: '1' },
   { text: '撒带教案数据库', level: 1, name: '1' },
 ])
-
 const liveChatRoomScrollOpen = ref(false)
-
 const liveOpenIndex = ref(0)
 const liveVideoLoading = ref(false)
 const liveChatInputShow = ref(false)
 const liveChatInputRef = ref(null)
 const liveChatInputText = ref('')
-const liveChatRoomBottom = ref(liveRoomChatBastBottom)
 const liveRoomShowAnimation = ref(false)
+const giftListShow = ref(false)
 
 // 单个直播间的布局
 const liveRoomLayout = computed(() => ({
   height: systemStore.screenHeight + 'px',
   width: '750rpx',
 }))
-// 聊天室的样式
-const chatRoomStyle = computed(() => ({
-  bottom: liveChatRoomBottom.value + 'px',
-}))
+
+onLoad(() => {
+  liveStore.getGiftList()
+})
 
 // video 播放事件
 function onVideoPlay(e) {
   liveVideoLoading.value = false
-  liveChatRoomBottom.value = liveRoomChatBastBottom
 }
-// 直播间出现事件
-function onLiveRoomAppear(e, item, index) {
-  liveShowIndex = index
-  appearDirection = e.direction
-}
-// 直播间消失事件
-function onliveRoomDisappear(e, item, index) {
-  liveRoomChange(e, item, index)
+// swpie 切换事件
+function onSwiperChange(e) {
+  const { current } = e.detail
+  liveRoomChange(current)
 }
 // 直播间切换函数
-const liveRoomChange = debounce((e, item, index) => {
-  if (appearDirection !== e.direction || liveShowIndex === liveOpenIndex.value) return
-
+const liveRoomChange = debounce((index) => {
   liveVideoLoading.value = true
-  liveOpenIndex.value = liveShowIndex
+  liveOpenIndex.value = index
 }, 0)
-// 点击聊天
+// 点击说点什么
 function onTapChat() {
   liveChatInputShow.value = true
 }
@@ -144,12 +128,8 @@ function onChatInputBlur(isEmit) {
   liveChatInputShow.value = false
   liveChatRoomScrollOpen.value = false
 }
-// 页面滚动事件
-function onListScroll(e) {
-  liveChatRoomBottom.value =
-    Math.abs(e.contentOffset.y) -
-    systemStore.screenHeight * liveOpenIndex.value +
-    liveRoomChatBastBottom
+function onTapGift() {
+  giftListShow.value = true
 }
 </script>
 <style lang="scss" scoped>
@@ -169,41 +149,6 @@ function onListScroll(e) {
   }
 }
 
-.live-room-footer {
-  padding: 54rpx 20rpx 40rpx;
-
-  .footer-operation {
-    color: #fff;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    .footer-input {
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 20rpx 50rpx 20rpx 20rpx;
-      border-radius: 37rpx;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-
-      .footer-input-icon {
-        height: 36rpx;
-        width: 36rpx;
-        margin-right: 18rpx;
-      }
-
-      .footer-input-text {
-        color: #fff;
-        font-size: 24rpx;
-        line-height: 34rpx;
-      }
-    }
-
-    .footer-button {
-      background-color: salmon;
-    }
-  }
-}
 .live-room-animation {
   position: fixed;
   top: 0;
