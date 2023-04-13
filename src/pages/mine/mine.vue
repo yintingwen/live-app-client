@@ -3,6 +3,8 @@
 </template>
 
 <script setup>
+import { useTabbarTheme } from '@hooks/tabbar'
+useTabbarTheme('bright')
 </script>
 <style lang='scss' scoped>
 

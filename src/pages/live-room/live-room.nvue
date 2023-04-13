@@ -34,7 +34,10 @@
         @tapInput="onTapChat"
         @tapGift="onTapGift"
       />
-      <LiveRoomCharRoom v-if="liveOpenIndex === index && !liveVideoLoading" :list="chatRoomList" />
+      <LiveRoomCharRoom 
+        v-if="liveOpenIndex === index && !liveVideoLoading" 
+        :list="chatRoomList" 
+      />
     </swiper-item>
   </swiper>
   <live-room-chat-input
@@ -67,6 +70,7 @@ import LiveRoomCover from './components/LiveRoomCover'
 import LiveRoomFooter from './components/LiveRoomFooter'
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
+import WebsocketClient from '@utils/websocketClient/WebsocketClient'
 
 const systemStore = userSystemStore()
 const liveStore = useLiveStore()
@@ -103,6 +107,7 @@ const liveRoomLayout = computed(() => ({
 
 onLoad(() => {
   liveStore.getGiftList()
+  createWSConnection()
 })
 
 // video 播放事件
@@ -130,6 +135,25 @@ function onChatInputBlur(isEmit) {
 }
 function onTapGift() {
   giftListShow.value = true
+}
+function createWSConnection() {
+  const liveInfo = liveStore.liveSlideList[liveOpenIndex.value]
+  console.log(`ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`);
+  const ws = new WebsocketClient({
+    url: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`
+  })
+  ws.on('open', () => {
+    console.log('open')
+  })
+  ws.on('message', (data) => {
+    console.log('message', data)
+  })
+  ws.on('close', () => {
+    console.log('close')
+  })
+  ws.on('error', () => {
+    console.log('error')
+  })
 }
 </script>
 <style lang="scss" scoped>

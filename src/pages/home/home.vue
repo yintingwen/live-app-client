@@ -23,7 +23,9 @@ import { ref } from 'vue'
 import { HOME_TABS } from '@constants/home'
 import { useLiveStore } from '@stores/live'
 import { onLoad } from '@dcloudio/uni-app'
+import { useTabbarTheme } from '@hooks/tabbar'
 
+useTabbarTheme('bright')
 const liveStore = useLiveStore()
 const tabActive = ref(1)
 
