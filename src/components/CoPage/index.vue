@@ -4,7 +4,7 @@
       <view class="custom-page-header-container">
         <u-status-bar></u-status-bar>
         <view class="costom-page-header-nav" :style="{ height: navHeight + 'px' }">
-          <slot name="navigation"></slot>
+          <slot name="navigation">{{ navText }}</slot>
         </view>
       </view>
       <view class="custom-page-header-placeholder">
@@ -19,18 +19,17 @@
   </view>
 </template>
 
-<script setup>
+<script setup name="CoPage">
 import { defineProps, computed } from 'vue'
 defineProps({
   isSwitchPage: { type: Boolean, default: false },
-  customHeader: { type: Boolean, default: false },
-  navHeight: { type: Number, default: 44 },
-  navTitle: { type: String, default: '' },
-  style: { type: [String, Object], default: '' },
-  pageStyle: { type: [String, Object], default: '' },
-  pageFill: { tpe: Boolean, default: false },
+  customHeader: { type: Boolean, default: false }, // 是否自定义头部
+  navHeight: { type: Number, default: 44 }, // 导航栏高度
+  navText: { type: String, default: '' }, // 导航栏文字
+  style: { type: [String, Object], default: '' }, // body样式
+  pageStyle: { type: [String, Object], default: '' }, // page样式
+  pageFill: { type: Boolean, default: false }, // 页面填充方式
 })
-const pageStyle = computed(() => {})
 </script>
 
 <style lang="scss" scoped>

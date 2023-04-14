@@ -2,34 +2,38 @@ import { onShow } from '@dcloudio/uni-app'
 
 export const tabbarItemName = ['home', 'movie', 'recharge', 'mime']
 export const tabbarThemeColor = {
-  'bright': '#4A4A4A',
-  'dark': '#FFFFFF'
+  bright: '#4A4A4A',
+  dark: '#FFFFFF',
 }
 export const tabbarThemeBgc = {
-  'bright': '#FFFFFF',
-  'dark': '#000000'
+  bright: '#FFFFFF',
+  dark: '#000000',
 }
+export let tabbarThemeCache = ''
 
-export function useTabbarTheme (theme) {
+export function useTabbarTheme(theme) {
   onShow(() => {
-    changeIcon()
-    changeStyle()
+    if (tabbarThemeCache !== theme) {
+      tabbarThemeCache = theme
+      changeIcon()
+      changeStyle()
+    }
   })
 
-  function changeIcon () {
+  function changeIcon() {
     tabbarItemName.forEach((name, index) => {
       uni.setTabBarItem({
         index,
         iconPath: `static/images/tabbar/${name}_${theme}.png`,
-        selectedIconPath: `static/images/tabbar/${name}@active.png`
+        selectedIconPath: `static/images/tabbar/${name}@active.png`,
       })
     })
   }
-  function changeStyle () {
+  function changeStyle() {
     uni.setTabBarStyle({
       color: tabbarThemeColor[theme],
       selectedColor: tabbarThemeColor[theme],
-      backgroundColor: tabbarThemeBgc[theme]
+      backgroundColor: tabbarThemeBgc[theme],
     })
   }
 }

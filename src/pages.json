@@ -20,7 +20,7 @@
 			}
 		},
 		{
-			"path": "pages/recharge/recharge",
+			"path": "pages/promote/promote",
 			"style": {
 				"navigationStyle": "custom"
 			}
@@ -52,8 +52,8 @@
 				"text": "电影"
 			},
 			{
-				"pagePath": "pages/recharge/recharge",
-				"text": "储值"
+				"pagePath": "pages/promote/promote",
+				"text": "推广"
 			},
 			{
 				"pagePath": "pages/mine/mine",
