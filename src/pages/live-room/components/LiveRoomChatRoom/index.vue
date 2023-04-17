@@ -16,7 +16,7 @@
           <view class="level-num">
             <text class="level-text">{{ item.level }}</text>
           </view>
-          <image class="level-icon" src="/static/images/live-room/chat_room_level.png" />
+          <image class="level-icon" src="/static/images/common/vip_level.png" />
         </view>
         <view class="chat-user-text">
           <rich-text :nodes="getRichNode(item)"></rich-text>
@@ -26,11 +26,10 @@
   </scroll-view>
 </template>
 <script setup>
-import CoText from '@/components/CoText'
 import { defineProps } from 'vue'
 
 defineProps({
-  list: { type: Array, default: [] },
+  list: { type: Array, default: [] },wwwwwww
 })
 
 function getRichNode(params) {

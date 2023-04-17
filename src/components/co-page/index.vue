@@ -19,7 +19,7 @@
   </view>
 </template>
 
-<script setup name="CoPage">
+<script setup name="co-page">
 import { defineProps, computed } from 'vue'
 defineProps({
   isSwitchPage: { type: Boolean, default: false },

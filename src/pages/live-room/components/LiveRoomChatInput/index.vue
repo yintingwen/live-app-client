@@ -28,13 +28,13 @@
 </template>
 <script setup>
 import { ref, defineEmits, computed, defineProps, watch, onBeforeUnmount } from 'vue'
-import { userSystemStore } from '@stores/system'
+import { useSystemStore } from '@stores/system'
 const emits = defineEmits(['blur', 'send', 'update:text', 'undate:show'])
 const props = defineProps({
   text: { type: String, default: '' },
   show: { type: Boolean, default: false },
 })
-const systemStore = userSystemStore()
+const systemStore = useSystemStore()
 const input = ref(null)
 const inputTop = ref(systemStore.screenHeight)
 

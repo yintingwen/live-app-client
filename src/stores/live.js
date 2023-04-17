@@ -16,15 +16,14 @@ export const useLiveStore = defineStore('live', () => {
   }
   // 获取直播滑动列表
   async function setLiveSlideList (index) {
-    // const list = [...liveList.value]
-  	const list = []
+  	const list = [...liveList.value]
     const target = liveList.value[index]
-    // list.splice(index, 1)
+    liveIndex.value.splice(index, 1)
     list.unshift(target)
-    for (let i = 100; i > 0; i--) {
-      const push = { ...list[0], id: list[0].id + 100 }
-      list.push(push)
-    }
+    // for (let i = 100; i > 0; i--) {
+    //   const push = { ...list[0], id: list[0].id + 100 }
+    //   list.push(push)
+    // }
     liveSlideList.value = list
   }
   // 获取礼物列表

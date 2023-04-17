@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import uni from '@dcloudio/vite-plugin-uni'
 import commonjs from '@rollup/plugin-commonjs'
-import postcssExcludeFiles from 'postcss-exclude-files';
 import UnoCSS from 'unocss/vite'
+import AutoImport from 'unplugin-auto-import/vite'
 import { resolve } from "path"
 
 export default defineConfig({
@@ -50,6 +50,10 @@ export default defineConfig({
   plugins: [
     commonjs(),
     UnoCSS(),
+    AutoImport({
+      imports:["vue","vue-router"],
+      dts:'src/auto-import.d.ts'    // 路径下自动生成文件夹存放全局指令
+    }),
     uni(),
   ]
 })

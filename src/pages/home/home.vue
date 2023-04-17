@@ -16,7 +16,6 @@
 </template>
 
 <script setup>
-import CoPage from '@components/CoPage'
 import HomeHeader from './components/HomeHeader/index.vue'
 import HomeLiveCard from './components/HomeLiveCard/index.vue'
 import { ref } from 'vue'

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
-export const userSystemStore = defineStore('system', () => {
+export const useSystemStore = defineStore('system', () => {
   const systemInfo = ref(null)
   
   const devicePixelRatio = computed(() => getSystemInfo().devicePixelRatio)

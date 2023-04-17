@@ -1,4 +1,5 @@
 import httpToastConfg from "./apiToast"
+import { log } from "@utils/dev"
 import { useUserStore } from '@stores/user'
 import Request from 'luch-request' 
 
@@ -31,12 +32,12 @@ http.interceptors.response.use(
   (response) => {
     /* 对响应成功做点什么 可使用async await 做异步操作*/
     const { data: { code, msg, data } } = response
-
+    log('response success', response);
     if (code !== 200) {
       uni.showToast({
         title: msg,
         icon: 'error',
-        mask: true
+        duration: 2000
       })
       return Promise.reject(msg)
     }
@@ -44,10 +45,12 @@ http.interceptors.response.use(
     return data
   },
   (error) => {
+    const { data = {}} = error
+    log('response error', error);
     uni.showToast({
-      title: '网络异常',
+      title: data.message || error.message || '网络异常',
       icon: 'error',
-      mask: true
+      duration: 2000
     })
     return Promise.reject(error)
   }

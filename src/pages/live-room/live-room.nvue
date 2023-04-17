@@ -17,7 +17,7 @@
       <video
         v-if="liveOpenIndex === index"
         :id="`video-${item.id}`"
-        :src="`http://121.62.18.249:8080/play/ad3cf639c6cb43789c4a7db5edbc9776.flv`"
+        :src="`http://121.62.18.249:8080/play/d87d13a23f71478cb5030170daae72d7.flv`"
         :controls="false"
         :style="liveRoomLayout"
         :autoplay="true"
@@ -27,6 +27,9 @@
         @tap="() => {}"
         @play="onVideoPlay($event, index)"
       ></video>
+      <view class="">
+
+      </view>
       <LiveRoomCover v-if="liveOpenIndex !== index || liveVideoLoading" />
       <LiveRoomFooter
         v-if="liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
@@ -61,7 +64,8 @@
 </template>
 
 <script setup>
-import { userSystemStore } from '@stores/system'
+import { getLiveRoomInfo } from '@apis/live'
+import { useSystemStore } from '@stores/system'
 import { computed, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import LiveRoomChatInput from './components/LiveRoomChatInput'
@@ -72,7 +76,7 @@ import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
 import WebsocketClient from '@utils/websocketClient/WebsocketClient'
 
-const systemStore = userSystemStore()
+const systemStore = useSystemStore()
 const liveStore = useLiveStore()
 
 const chatRoomList = ref([
@@ -97,6 +101,7 @@ const liveChatInputShow = ref(false)
 const liveChatInputRef = ref(null)
 const liveChatInputText = ref('')
 const liveRoomShowAnimation = ref(false)
+const liveRoomInfo = ref({})
 const giftListShow = ref(false)
 
 // 单个直播间的布局
@@ -108,6 +113,7 @@ const liveRoomLayout = computed(() => ({
 onLoad(() => {
   liveStore.getGiftList()
   createWSConnection()
+  getRoomInfo()
 })
 
 // video 播放事件
@@ -123,6 +129,7 @@ function onSwiperChange(e) {
 const liveRoomChange = debounce((index) => {
   liveVideoLoading.value = true
   liveOpenIndex.value = index
+  getRoomInfo()
 }, 0)
 // 点击说点什么
 function onTapChat() {
@@ -154,6 +161,12 @@ function createWSConnection() {
   ws.on('error', () => {
     console.log('error')
   })
+}
+
+async function getRoomInfo (id) {
+  const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
+  const data = await getLiveRoomInfo({ roomid: id || liveRoom.id })
+  liveRoomInfo.value = data.userInfo
 }
 </script>
 <style lang="scss" scoped>

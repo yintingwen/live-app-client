@@ -1,13 +1,13 @@
 <script setup>
 import { onLaunch } from '@dcloudio/uni-app'
-import { userSystemStore } from '@stores/system'
+import { useSystemStore } from '@stores/system'
 import { useUserStore } from '@stores/user'
-const system = userSystemStore()
+const system = useSystemStore()
 const user = useUserStore()
 
 onLaunch(() => {
   system.getSystemInfo()
-  user.getUserInfo()
+  user.userToken && user.getUserInfo()
 })
 </script>
 
