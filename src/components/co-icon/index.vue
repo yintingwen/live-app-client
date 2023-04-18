@@ -21,6 +21,6 @@ const imageStyle = computed(() => {
 
 <style lang="scss">
 .co-icon {
-  vertical-align: top;
+  // vertical-align: top;
 }
 </style>

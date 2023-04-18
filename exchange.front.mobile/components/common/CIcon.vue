@@ -80,6 +80,6 @@ export default {
 <style lang="scss" scoped>
 image {
   width: 1em;
-  vertical-align: middle;
+  // vertical-align: middle;
 }
 </style>

@@ -2,6 +2,7 @@ import { createSSRApp } from "vue";
 import * as Pinia from 'pinia'
 import App from "./App.vue";
 import initPlugin from "./plugins"
+import initConfig from './config'
 
 import 'uno.css'
 
@@ -10,6 +11,7 @@ export function createApp() {
   app.use(Pinia.createPinia())
   
   initPlugin(app)
+  initConfig(app)
 
 	return {
 		app,

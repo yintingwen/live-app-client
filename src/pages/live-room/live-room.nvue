@@ -27,20 +27,21 @@
         @tap="() => {}"
         @play="onVideoPlay($event, index)"
       ></video>
-      <view class="">
-
-      </view>
+      <view class=""> </view>
       <LiveRoomCover v-if="liveOpenIndex !== index || liveVideoLoading" />
+      <LiveRoomHeader
+        v-if="liveRoomInfo && liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
+        :anchorInfo="liveRoomUserInfo"
+        :userCount="liveRoomInfo.userCount"
+        @tapAnchor="() => (anchorInfoShow = true)"
+      />
       <LiveRoomFooter
         v-if="liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
         class="bottom-fixed"
         @tapInput="onTapChat"
         @tapGift="onTapGift"
       />
-      <LiveRoomCharRoom 
-        v-if="liveOpenIndex === index && !liveVideoLoading" 
-        :list="chatRoomList" 
-      />
+      <LiveRoomCharRoom v-if="liveOpenIndex === index && !liveVideoLoading" :list="chatRoomList" />
     </swiper-item>
   </swiper>
   <live-room-chat-input
@@ -49,51 +50,52 @@
     ref="liveChatInputRef"
     @blur="onChatInputBlur(true)"
   />
-  <u-popup 
-    :show="giftListShow" 
-    mode="bottom"  
-    @close="() => giftListShow = false" 
-  >
+  <u-popup :show="giftListShow" mode="bottom" @close="() => (giftListShow = false)">
     <view>
       {{ JSON.stringify(liveStore.giftList) }}
     </view>
-	</u-popup>
+  </u-popup>
+  <u-popup 
+    :show="anchorInfoShow" 
+    bgColor="transparent"
+    @close="() => (anchorInfoShow = false)"
+  >
+    <LiveRoomAnchorInfo
+      :anchorInfo="liveRoomUserInfo"
+    />
+  </u-popup>
   <view v-if="liveRoomShowAnimation" class="live-room-animation" :style="liveRoomLayout">
     <l-svga></l-svga>
   </view>
 </template>
 
 <script setup>
-import { getLiveRoomInfo } from '@apis/live'
-import { useSystemStore } from '@stores/system'
-import { computed, ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
 import LiveRoomChatInput from './components/LiveRoomChatInput'
 import LiveRoomCharRoom from './components/LiveRoomChatRoom/index.vue'
 import LiveRoomCover from './components/LiveRoomCover'
+import LiveRoomHeader from './components/LiveRoomHeader'
 import LiveRoomFooter from './components/LiveRoomFooter'
+import LiveRoomAnchorInfo from './components/LiveRoomAnchorInfo'
+
+import { getLiveRoomInfo } from '@apis/live'
+import { useSystemStore } from '@stores/system'
+import { computed, ref } from 'vue'
+import { onLoad, onUnload } from '@dcloudio/uni-app'
+
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
 import WebsocketClient from '@utils/websocketClient/WebsocketClient'
+import { WS_ROOM_SHAKE_HANDS, WS_RECEIVE_TYPE_UPDATE_COUNT } from '@constants/websocket'
+import '@/config/websocket'
 
 const systemStore = useSystemStore()
 const liveStore = useLiveStore()
+let ws = null
 
-const chatRoomList = ref([
-  { text: '撒带教案数据库', level: 1, name: '1' },
-  { text: '撒带教案数据库', level: 1, name: '1' },
-  {
-    text: '撒带教案数撒带教案数据库撒带撒带教案数撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库教案数据库撒带教案数据库撒带教案数据库撒带教案数据库据库',
-    level: 1,
-    name: '1',
-  },
-  { text: '撒带教案数据库', level: 1, name: '1' },
-  { text: '撒带教案数据库', level: 1, name: '1' },
-  { text: '撒带教案数据库', level: 1, name: '1' },
-  { text: '撒带教案数据库', level: 1, name: '1' },
-  { text: '撒带教案数据库', level: 1, name: '1' },
-  { text: '撒带教案数据库', level: 1, name: '1' },
-])
+const anchorInfoShow = ref(true)
+const giftListShow = ref(false)
+
+const chatRoomList = ref([])
 const liveChatRoomScrollOpen = ref(false)
 const liveOpenIndex = ref(0)
 const liveVideoLoading = ref(false)
@@ -101,8 +103,9 @@ const liveChatInputShow = ref(false)
 const liveChatInputRef = ref(null)
 const liveChatInputText = ref('')
 const liveRoomShowAnimation = ref(false)
+
 const liveRoomInfo = ref({})
-const giftListShow = ref(false)
+const liveRoomUserInfo = ref({})
 
 // 单个直播间的布局
 const liveRoomLayout = computed(() => ({
@@ -111,9 +114,17 @@ const liveRoomLayout = computed(() => ({
 }))
 
 onLoad(() => {
+  const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
+  liveRoomInfo.value = liveRoom
+  liveRoomUserInfo.value = liveRoom.userInfo
+
   liveStore.getGiftList()
   createWSConnection()
   getRoomInfo()
+})
+
+onUnload(() => {
+  ws.close()
 })
 
 // video 播放事件
@@ -143,30 +154,34 @@ function onChatInputBlur(isEmit) {
 function onTapGift() {
   giftListShow.value = true
 }
+// 点击主播
+function onTapAnchor() {}
 function createWSConnection() {
   const liveInfo = liveStore.liveSlideList[liveOpenIndex.value]
-  console.log(`ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`);
-  const ws = new WebsocketClient({
-    url: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`
+  ws = new WebsocketClient({
+    url: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`,
   })
   ws.on('open', () => {
-    console.log('open')
+    ws.sendByTemplate(WS_ROOM_SHAKE_HANDS, liveInfo.id)
   })
   ws.on('message', (data) => {
-    console.log('message', data)
+    const { type } = data
+    if (type === WS_RECEIVE_TYPE_UPDATE_COUNT) {
+      liveRoomInfo.value = data.user[0]
+    }
   })
-  ws.on('close', () => {
-    console.log('close')
-  })
-  ws.on('error', () => {
-    console.log('error')
-  })
+  ws.connect()
 }
 
-async function getRoomInfo (id) {
+async function getRoomInfo(id) {
   const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
   const data = await getLiveRoomInfo({ roomid: id || liveRoom.id })
-  liveRoomInfo.value = data.userInfo
+  if (data) {
+    liveRoomInfo.value = data
+    liveRoomUserInfo.value = data.userInfo
+  } else {
+    ws.close()
+  }
 }
 </script>
 <style lang="scss" scoped>

@@ -29,7 +29,7 @@
 import { defineProps } from 'vue'
 
 defineProps({
-  list: { type: Array, default: [] },wwwwwww
+  list: { type: Array, default: [] },
 })
 
 function getRichNode(params) {

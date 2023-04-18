@@ -132,8 +132,7 @@ var WebsocketClientTemplate = class {
 };
 
 // src/WebsocketClient.ts
-var WebsocketClient = class {
-  // 拦截器
+var _WebsocketClient = class {
   /**
    * 构造函数
    */
@@ -253,8 +252,17 @@ var WebsocketClient = class {
    * @param data 数据
    */
   async sendByTemplate(templateId, data) {
-    const templateData = this.template.generate(templateId, data);
+    const templateIns = this.getTemplateIns(templateId);
+    const templateData = templateIns.generate(templateId, data);
     this.send(templateData);
+  }
+  /**
+   * 获取模板管理实例
+   * @param templateId 模板ID
+   * @returns 
+   */
+  getTemplateIns(templateId) {
+    return this.template.get(templateId) ? this.template : _WebsocketClient.template;
   }
   /**
    * 订阅主题，可以自动发送订阅的模板消息，并在连接后进行自动订阅
@@ -284,11 +292,9 @@ var WebsocketClient = class {
   async sendSub(action, topic) {
     if (!this.socket || this.status !== 1 /* CONNECTED */)
       return;
-    let data = topic;
-    if (this.template.get(action)) {
-      data = this.template.generate(action, topic);
-    }
-    const sendData = await this.interceptor.run(action, data, this);
+    const templateIns = this.getTemplateIns(action);
+    const tmpData = templateIns.generate(action, topic);
+    const sendData = await this.interceptor.run(action, tmpData, this);
     this.send(sendData);
   }
   /**
@@ -306,7 +312,7 @@ var WebsocketClient = class {
    * socket收到消息
    * @param {*} msg 数据
    */
-  handelMessage(msg) {
+  async handelMessage(msg) {
     let { data } = msg;
     if (!(data instanceof ArrayBuffer)) {
       try {
@@ -314,7 +320,7 @@ var WebsocketClient = class {
       } catch (error) {
       }
     }
-    data = this.interceptor.run("message", data, this);
+    data = await this.interceptor.run("message", data, this);
     this.event.emit("message", data);
   }
   /**
@@ -353,6 +359,9 @@ var WebsocketClient = class {
     });
   }
 };
+var WebsocketClient = _WebsocketClient;
+// 拦截器
+WebsocketClient.template = new WebsocketClientTemplate();
 function normalizeOptions2(options) {
   const { reconnect, reconnectMaxCount, reconnectInterval } = options;
   options.reconnect = reconnect === void 0 ? true : !!reconnect;

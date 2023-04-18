@@ -13,6 +13,7 @@ onLaunch(() => {
 
 <style lang="scss">
 @import "uview-plus/index.scss";
+@import "~@/styles/utils.scss";
 /*每个页面公共css */
 page {
   height: 100%;

@@ -52,7 +52,7 @@ declare class WebsocketClientReconnector {
 declare class WebsocketClientTemplate {
     private templates;
     add(name: string, genaertor: WebsocketClientCallbackAny): void;
-    get(name: string): WebsocketClientCallbackAny;
+    get(name: string): WebsocketClientCallbackAny | undefined;
     generate(name: string, data: any): any;
 }
 
@@ -86,6 +86,7 @@ declare class WebsocketClient {
     template: WebsocketClientTemplate;
     event: EventEmitter;
     interceptor: WebscoketClientInterceptor;
+    static template: WebsocketClientTemplate;
     /**
      * 构造函数
      */
@@ -123,6 +124,12 @@ declare class WebsocketClient {
      * @param data 数据
      */
     sendByTemplate(templateId: string, data: any): Promise<void>;
+    /**
+     * 获取模板管理实例
+     * @param templateId 模板ID
+     * @returns
+     */
+    getTemplateIns(templateId: string): WebsocketClientTemplate;
     /**
      * 订阅主题，可以自动发送订阅的模板消息，并在连接后进行自动订阅
      * @param {*} topic 订阅主题
