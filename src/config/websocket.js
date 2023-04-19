@@ -1,5 +1,5 @@
 import { USER_TOKEN_STORAGE } from '@/constants/user';
-import { WS_ROOM_SHAKE_HANDS, WS_SEND_METHOD_INFO } from '@/constants/websocket';
+import { WS_ROOM_SHAKE_HANDS, WS_SEND_METHOD_INFO, WS_SEND_METHOD_FOLLOW } from '@/constants/websocket';
 import WebsocketClient from '@/utils/websocketClient/WebsocketClient';
 
 // 握手模板
@@ -15,4 +15,11 @@ WebsocketClient.template.add(WS_ROOM_SHAKE_HANDS, (room) => {
     room,
     token
   }  
+})
+// 关注模板
+WebsocketClient.template.add(WS_SEND_METHOD_FOLLOW, (room) => {
+  return {
+    method: WS_SEND_METHOD_FOLLOW,
+    room
+  }
 })

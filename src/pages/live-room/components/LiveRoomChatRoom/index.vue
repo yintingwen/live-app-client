@@ -1,7 +1,7 @@
 <template>
   <scroll-view
     class="live-room-chat-room"
-    :scroll-into-view="`chat-${list.length - 1}`"
+    :scroll-into-view="scrollIntoView"
     :scroll-y="true"
     :show-scrollbar="false"
   >
@@ -26,10 +26,18 @@
   </scroll-view>
 </template>
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, watch } from 'vue'
 
-defineProps({
+const props = defineProps({
   list: { type: Array, default: [] },
+})
+
+const scrollIntoView = ref('')
+
+watch(props.list, (newVal) => {
+  setTimeout(() => {
+    scrollIntoView.value = `chat-${newVal.length - 1}`
+  })
 })
 
 function getRichNode(params) {

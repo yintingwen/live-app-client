@@ -2,21 +2,23 @@
   <view class="live-room-header">
     <u-status-bar />
     <view class="room-info">
-      <view class="anchor-info" @tap="emits('tapAnchor', $event)">
-        <view class="anchor-avatar">
-          <u-avatar :src="anchorInfo.avatar" :size="64"/>
-        </view>
-        <view class="anchor-info-content">
-          <view class="anchor-name">
-            <text class="anchor-info-text c-white">{{ anchorInfo.nickname }}</text>
+      <view class="anchor-float-btn">
+        <view class="anchor-info" @tap="emits('tapAnchor')">
+          <view class="anchor-avatar">
+            <u-avatar :src="anchorInfo.avatar" :size="64" />
           </view>
-          <view class="anchor-id">
-            <text class="anchor-info-text c-white">ID: {{ anchorInfo.anchorVipId }}</text>
+          <view class="anchor-info-content">
+            <view class="anchor-name">
+              <text class="anchor-info-text c-white">{{ anchorInfo.nickname }}</text>
+            </view>
+            <view class="anchor-id">
+              <text class="anchor-info-text c-white">ID: {{ anchorInfo.anchorVipId }}</text>
+            </view>
           </view>
         </view>
-        <u-avatar 
-          src="/static/icons/room_follow.png" 
-          :size="52" 
+        <u-avatar
+          src="/static/icons/room_follow.png"
+          :size="52"
           @tap="emits('tapFollow', $event)"
         />
       </view>
@@ -31,11 +33,10 @@
 
 <script setup>
 defineProps({
-  anchorInfo: { type: Object, default: () => ({})},
-  userCount: { type: Number, default: 0 }
+  anchorInfo: { type: Object, default: () => ({}) },
+  userCount: { type: Number, default: 0 },
 })
 const emits = defineEmits(['tapAnchor', 'tapFollow'])
-
 </script>
 
 <style lang="scss">
@@ -58,26 +59,31 @@ const emits = defineEmits(['tapAnchor', 'tapFollow'])
   justify-content: space-between;
 }
 
-.anchor-info {
-  display: flex;
+.anchor-float-btn {
+  width: 280rpx;
+  height: 70rpx;
   flex-direction: row;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 35rpx;
-  height: 70rpx;
-  width: 280rpx;
   padding-right: 6rpx;
+  border-radius: 35rpx;
+  background-color: rgba(0, 0, 0, 0.3);
 
-  .anchor-avatar {
-    margin-right: 14rpx;
-  }
-
-  .anchor-info-content {
+  .anchor-info {
+    flex-direction: row;
+    align-items: center;
     flex: 1;
 
-    .anchor-info-text{
-      font-size: 20rpx;
-      line-height: 28rpx;
+    .anchor-avatar {
+      margin-right: 14rpx;
+    }
+
+    .anchor-info-content {
+      flex: 1;
+
+      .anchor-info-text {
+        font-size: 20rpx;
+        line-height: 28rpx;
+      }
     }
   }
 }

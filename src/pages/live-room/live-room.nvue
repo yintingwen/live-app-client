@@ -28,20 +28,21 @@
         @play="onVideoPlay($event, index)"
       ></video>
       <view class=""> </view>
-      <LiveRoomCover v-if="liveOpenIndex !== index || liveVideoLoading" />
+      <LiveRoomCover v-if=" liveOpenIndex !== index || liveVideoLoading" />
       <LiveRoomHeader
         v-if="liveRoomInfo && liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
         :anchorInfo="liveRoomUserInfo"
-        :userCount="liveRoomInfo.userCount"
+        :userCount="liveRoomUserCount"
         @tapAnchor="() => (anchorInfoShow = true)"
+        @tapFollow="onTapFollow"
       />
       <LiveRoomFooter
-        v-if="liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
+        v-if="!giftListShow && liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
         class="bottom-fixed"
         @tapInput="onTapChat"
-        @tapGift="onTapGift"
+        @tapGift="() => (giftListShow = true)"
       />
-      <LiveRoomCharRoom v-if="liveOpenIndex === index && !liveVideoLoading" :list="chatRoomList" />
+      <LiveRoomCharRoom v-if="!giftListShow && liveOpenIndex === index && !liveVideoLoading" :list="chatRoomList" />
     </swiper-item>
   </swiper>
   <live-room-chat-input
@@ -50,10 +51,13 @@
     ref="liveChatInputRef"
     @blur="onChatInputBlur(true)"
   />
-  <u-popup :show="giftListShow" mode="bottom" @close="() => (giftListShow = false)">
-    <view>
-      {{ JSON.stringify(liveStore.giftList) }}
-    </view>
+  <u-popup 
+    :show="giftListShow"
+    :overlayOpacity="0"
+    bgColor="transparent"
+    @close="() => (giftListShow = false)"
+  >
+    <LiveRoomGiftList/>
   </u-popup>
   <u-popup 
     :show="anchorInfoShow" 
@@ -70,12 +74,15 @@
 </template>
 
 <script setup>
+import '@/config/websocket'
+
 import LiveRoomChatInput from './components/LiveRoomChatInput'
 import LiveRoomCharRoom from './components/LiveRoomChatRoom/index.vue'
 import LiveRoomCover from './components/LiveRoomCover'
 import LiveRoomHeader from './components/LiveRoomHeader'
 import LiveRoomFooter from './components/LiveRoomFooter'
 import LiveRoomAnchorInfo from './components/LiveRoomAnchorInfo'
+import LiveRoomGiftList from './components/LiveRoomGiftList'
 
 import { getLiveRoomInfo } from '@apis/live'
 import { useSystemStore } from '@stores/system'
@@ -85,24 +92,23 @@ import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
 import WebsocketClient from '@utils/websocketClient/WebsocketClient'
-import { WS_ROOM_SHAKE_HANDS, WS_RECEIVE_TYPE_UPDATE_COUNT } from '@constants/websocket'
-import '@/config/websocket'
+import { WS_RECEIVE_TYPE_FOLLOW_ERROR, WS_RECEIVE_TYPE_FOLLOW_SUCCESS, WS_SEND_METHOD_FOLLOW, WS_ROOM_SHAKE_HANDS, WS_RECEIVE_TYPE_UPDATE_COUNT, WS_RECEIVE_TYPE_CHAT_SUCCESS } from '@constants/websocket'
+import { log } from '@/utils/dev'
 
 const systemStore = useSystemStore()
 const liveStore = useLiveStore()
 let ws = null
 
-const anchorInfoShow = ref(true)
+const anchorInfoShow = ref(false)
 const giftListShow = ref(false)
-
 const chatRoomList = ref([])
-const liveChatRoomScrollOpen = ref(false)
 const liveOpenIndex = ref(0)
 const liveVideoLoading = ref(false)
 const liveChatInputShow = ref(false)
 const liveChatInputRef = ref(null)
 const liveChatInputText = ref('')
 const liveRoomShowAnimation = ref(false)
+const liveRoomUserCount = ref(0)
 
 const liveRoomInfo = ref({})
 const liveRoomUserInfo = ref({})
@@ -117,6 +123,7 @@ onLoad(() => {
   const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
   liveRoomInfo.value = liveRoom
   liveRoomUserInfo.value = liveRoom.userInfo
+  liveRoomUserCount.value = liveRoom.userCount 
 
   liveStore.getGiftList()
   createWSConnection()
@@ -138,9 +145,11 @@ function onSwiperChange(e) {
 }
 // 直播间切换函数
 const liveRoomChange = debounce((index) => {
+  ws.close()
   liveVideoLoading.value = true
   liveOpenIndex.value = index
   getRoomInfo()
+  createWSConnection()
 }, 0)
 // 点击说点什么
 function onTapChat() {
@@ -149,13 +158,8 @@ function onTapChat() {
 // 聊天输入框失去焦点
 function onChatInputBlur(isEmit) {
   liveChatInputShow.value = false
-  liveChatRoomScrollOpen.value = false
 }
-function onTapGift() {
-  giftListShow.value = true
-}
-// 点击主播
-function onTapAnchor() {}
+// 创建ws链接
 function createWSConnection() {
   const liveInfo = liveStore.liveSlideList[liveOpenIndex.value]
   ws = new WebsocketClient({
@@ -165,14 +169,35 @@ function createWSConnection() {
     ws.sendByTemplate(WS_ROOM_SHAKE_HANDS, liveInfo.id)
   })
   ws.on('message', (data) => {
-    const { type } = data
-    if (type === WS_RECEIVE_TYPE_UPDATE_COUNT) {
-      liveRoomInfo.value = data.user[0]
+    const { type, msg } = data
+    log('ws message', data)
+    switch (type) {
+      case WS_RECEIVE_TYPE_UPDATE_COUNT: {
+        liveRoomUserCount.value = data.count
+        break
+      }
+      case WS_RECEIVE_TYPE_CHAT_SUCCESS: {
+        chatRoomList.value.push({
+          name: data.name,
+          level: data.vipId,
+          text: data.data
+        })
+        break
+      }
+      case WS_RECEIVE_TYPE_FOLLOW_SUCCESS:
+      case WS_RECEIVE_TYPE_FOLLOW_ERROR: {
+        console.log('关注成功');
+        uni.showToast({
+          title: type === WS_RECEIVE_TYPE_FOLLOW_SUCCESS ? '关注成功' : msg,
+          icon: 'none'
+        })
+        break
+      }
     }
   })
   ws.connect()
 }
-
+// 获取直播间信息
 async function getRoomInfo(id) {
   const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
   const data = await getLiveRoomInfo({ roomid: id || liveRoom.id })
@@ -182,6 +207,10 @@ async function getRoomInfo(id) {
   } else {
     ws.close()
   }
+}
+
+function onTapFollow () {
+  ws.sendByTemplate(WS_SEND_METHOD_FOLLOW, liveRoomInfo.value.id)
 }
 </script>
 <style lang="scss" scoped>
