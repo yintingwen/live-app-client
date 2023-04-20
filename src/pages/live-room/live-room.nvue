@@ -180,7 +180,7 @@ function createWSConnection() {
   })
   ws.on('message', (data) => {
     log('ws message', data)
-    const { type, msg } = data
+    const { type, msg, gift } = data
     switch (type) {
       case WS_RECEIVE_TYPE_FOLLOW_ERROR:
       case WS_RECEIVE_TYPE_SEND_GIFT_ERROR: {
@@ -204,7 +204,6 @@ function createWSConnection() {
         break
       }
       case WS_RECEIVE_TYPE_SEND_GIFT_SUCCESS: {
-        giftListShow.value = false
         liveRoomShowAnimation.value = true
         setTimeout(() => {
           giftAnimationRef.value.render(async (parser, player) => {
@@ -216,13 +215,6 @@ function createWSConnection() {
               liveRoomShowAnimation.value = false
             })
           })
-        })
-        break
-      }
-      case WS_RECEIVE_TYPE_FOLLOW_ERROR: {
-        uni.showToast({
-          title: msg,
-          icon: 'none',
         })
         break
       }
@@ -253,6 +245,7 @@ async function getGiftList() {
 }
 
 function onTapGift(gift) {
+  giftListShow.value = false
   ws.sendByTemplate(WS_SEND_METHOD_SEND_GIFT, {
     room: liveRoomInfo.value.id,
     giftId: gift.id,

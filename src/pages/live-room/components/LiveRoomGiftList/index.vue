@@ -3,6 +3,7 @@
     <view class="live-room-gift-header">
       <view class="live-room-gift-tabs">
         <u-tabs
+          :current="activeTab"
           :list="tabs"
           lineWidth="30rpx"
           lineHeight="8rpx"
@@ -16,12 +17,13 @@
             color: 'rgba(166, 165, 163, 1)',
           }"
           itemStyle="height: 55rpx;padding: 0 17rpx 20rpx;"
+          @change="onTabsChange"
         >
         </u-tabs>
       </view>
     </view>
     <view class="live-room-gift-swiper">
-      <swiper :style="{ height: '520rpx' }">
+      <swiper :style="{ height: '520rpx' }" :current="activeTab" @change="onSwiperChange">
         <swiper-item v-for="list in renderGiftList" :key="list.id">
           <scroll-view scroll-y :style="{ height: '525rpx' }">
             <view class="live-room-gift-swiper-item">
@@ -68,6 +70,14 @@ const tabs = computed(() =>
 )
 
 const renderGiftList = computed(() => props.list.map((item) => item.giftList))
+
+function onTabsChange (e) {
+  activeTab.value = e.index
+}
+
+function onSwiperChange (e) {
+  activeTab.value = e.detail.current
+}
 </script>
 <style lang="scss">
 .live-room-gift-list {
