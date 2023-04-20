@@ -313,6 +313,7 @@ var _WebsocketClient = class {
    * @param {*} msg 数据
    */
   async handelMessage(msg) {
+    console.log(msg);
     let { data } = msg;
     if (!(data instanceof ArrayBuffer)) {
       try {

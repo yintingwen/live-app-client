@@ -27,8 +27,7 @@
         @tap="() => {}"
         @play="onVideoPlay($event, index)"
       ></video>
-      <view class=""> </view>
-      <LiveRoomCover v-if=" liveOpenIndex !== index || liveVideoLoading" />
+      <LiveRoomCover v-if="liveOpenIndex !== index || liveVideoLoading" />
       <LiveRoomHeader
         v-if="liveRoomInfo && liveOpenIndex === index && !liveChatInputShow && !liveVideoLoading"
         :anchorInfo="liveRoomUserInfo"
@@ -42,7 +41,10 @@
         @tapInput="onTapChat"
         @tapGift="() => (giftListShow = true)"
       />
-      <LiveRoomCharRoom v-if="!giftListShow && liveOpenIndex === index && !liveVideoLoading" :list="chatRoomList" />
+      <LiveRoomCharRoom
+        v-if="!giftListShow && liveOpenIndex === index && !liveVideoLoading"
+        :list="chatRoomList"
+      />
     </swiper-item>
   </swiper>
   <live-room-chat-input
@@ -51,25 +53,19 @@
     ref="liveChatInputRef"
     @blur="onChatInputBlur(true)"
   />
-  <u-popup 
+  <u-popup
     :show="giftListShow"
     :overlayOpacity="0"
     bgColor="transparent"
     @close="() => (giftListShow = false)"
   >
-    <LiveRoomGiftList/>
+    <LiveRoomGiftList :list="giftList" @tapGift="onTapGift" />
   </u-popup>
-  <u-popup 
-    :show="anchorInfoShow" 
-    bgColor="transparent"
-    @close="() => (anchorInfoShow = false)"
-  >
-    <LiveRoomAnchorInfo
-      :anchorInfo="liveRoomUserInfo"
-    />
+  <u-popup :show="anchorInfoShow" bgColor="transparent" @close="() => (anchorInfoShow = false)">
+    <LiveRoomAnchorInfo :anchorInfo="liveRoomUserInfo" />
   </u-popup>
   <view v-if="liveRoomShowAnimation" class="live-room-animation" :style="liveRoomLayout">
-    <l-svga></l-svga>
+    <l-svga ref="giftAnimationRef"></l-svga>
   </view>
 </template>
 
@@ -84,7 +80,7 @@ import LiveRoomFooter from './components/LiveRoomFooter'
 import LiveRoomAnchorInfo from './components/LiveRoomAnchorInfo'
 import LiveRoomGiftList from './components/LiveRoomGiftList'
 
-import { getLiveRoomInfo } from '@apis/live'
+import * as liveApi from '@apis/live'
 import { useSystemStore } from '@stores/system'
 import { computed, ref } from 'vue'
 import { onLoad, onUnload } from '@dcloudio/uni-app'
@@ -92,7 +88,17 @@ import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
 import WebsocketClient from '@utils/websocketClient/WebsocketClient'
-import { WS_RECEIVE_TYPE_FOLLOW_ERROR, WS_RECEIVE_TYPE_FOLLOW_SUCCESS, WS_SEND_METHOD_FOLLOW, WS_ROOM_SHAKE_HANDS, WS_RECEIVE_TYPE_UPDATE_COUNT, WS_RECEIVE_TYPE_CHAT_SUCCESS } from '@constants/websocket'
+import {
+  WS_RECEIVE_TYPE_FOLLOW_ERROR,
+  WS_RECEIVE_TYPE_FOLLOW_SUCCESS,
+  WS_SEND_METHOD_FOLLOW,
+  WS_SEND_METHOD_SEND_GIFT,
+  WS_ROOM_SHAKE_HANDS,
+  WS_RECEIVE_TYPE_UPDATE_COUNT,
+  WS_RECEIVE_TYPE_CHAT_SUCCESS,
+  WS_RECEIVE_TYPE_SEND_GIFT_SUCCESS,
+  WS_RECEIVE_TYPE_SEND_GIFT_ERROR,
+} from '@constants/websocket'
 import { log } from '@/utils/dev'
 
 const systemStore = useSystemStore()
@@ -101,6 +107,9 @@ let ws = null
 
 const anchorInfoShow = ref(false)
 const giftListShow = ref(false)
+const giftAnimationRef = ref(null)
+const giftList = ref([]) // 礼物列表
+
 const chatRoomList = ref([])
 const liveOpenIndex = ref(0)
 const liveVideoLoading = ref(false)
@@ -113,6 +122,7 @@ const liveRoomUserCount = ref(0)
 const liveRoomInfo = ref({})
 const liveRoomUserInfo = ref({})
 
+
 // 单个直播间的布局
 const liveRoomLayout = computed(() => ({
   height: systemStore.screenHeight + 'px',
@@ -123,10 +133,10 @@ onLoad(() => {
   const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
   liveRoomInfo.value = liveRoom
   liveRoomUserInfo.value = liveRoom.userInfo
-  liveRoomUserCount.value = liveRoom.userCount 
+  liveRoomUserCount.value = liveRoom.userCount
 
-  liveStore.getGiftList()
   createWSConnection()
+  getGiftList()
   getRoomInfo()
 })
 
@@ -169,9 +179,14 @@ function createWSConnection() {
     ws.sendByTemplate(WS_ROOM_SHAKE_HANDS, liveInfo.id)
   })
   ws.on('message', (data) => {
-    const { type, msg } = data
     log('ws message', data)
+    const { type, msg } = data
     switch (type) {
+      case WS_RECEIVE_TYPE_FOLLOW_ERROR:
+      case WS_RECEIVE_TYPE_SEND_GIFT_ERROR: {
+        uni.showToast({ title: msg, icon: 'none' })
+        break
+      }
       case WS_RECEIVE_TYPE_UPDATE_COUNT: {
         liveRoomUserCount.value = data.count
         break
@@ -180,16 +195,34 @@ function createWSConnection() {
         chatRoomList.value.push({
           name: data.name,
           level: data.vipId,
-          text: data.data
+          text: data.data,
         })
         break
       }
-      case WS_RECEIVE_TYPE_FOLLOW_SUCCESS:
+      case WS_RECEIVE_TYPE_FOLLOW_SUCCESS:{
+        uni.showToast({ title: '关注成功', icon: 'none' })
+        break
+      }
+      case WS_RECEIVE_TYPE_SEND_GIFT_SUCCESS: {
+        giftListShow.value = false
+        liveRoomShowAnimation.value = true
+        setTimeout(() => {
+          giftAnimationRef.value.render(async (parser, player) => {
+            const videoItem = await parser.load(`/static/gifts/svgas/${gift.specialLabel}.svga`)
+            await player.setVideoItem(videoItem)
+            player.loops = 1
+            player.startAnimation()
+            player.onFinished(() => {
+              liveRoomShowAnimation.value = false
+            })
+          })
+        })
+        break
+      }
       case WS_RECEIVE_TYPE_FOLLOW_ERROR: {
-        console.log('关注成功');
         uni.showToast({
-          title: type === WS_RECEIVE_TYPE_FOLLOW_SUCCESS ? '关注成功' : msg,
-          icon: 'none'
+          title: msg,
+          icon: 'none',
         })
         break
       }
@@ -200,7 +233,7 @@ function createWSConnection() {
 // 获取直播间信息
 async function getRoomInfo(id) {
   const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
-  const data = await getLiveRoomInfo({ roomid: id || liveRoom.id })
+  const data = await liveApi.getLiveRoomInfo({ roomid: id || liveRoom.id })
   if (data) {
     liveRoomInfo.value = data
     liveRoomUserInfo.value = data.userInfo
@@ -209,8 +242,21 @@ async function getRoomInfo(id) {
   }
 }
 
-function onTapFollow () {
+function onTapFollow() {
   ws.sendByTemplate(WS_SEND_METHOD_FOLLOW, liveRoomInfo.value.id)
+}
+
+// 获取礼物列表
+async function getGiftList() {
+  const data = await liveApi.getGiftList()
+  giftList.value = data
+}
+
+function onTapGift(gift) {
+  ws.sendByTemplate(WS_SEND_METHOD_SEND_GIFT, {
+    room: liveRoomInfo.value.id,
+    giftId: gift.id,
+  })
 }
 </script>
 <style lang="scss" scoped>
