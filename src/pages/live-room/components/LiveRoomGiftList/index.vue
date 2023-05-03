@@ -35,7 +35,7 @@
               >
                 <image
                   class="gift-item-img"
-                  :src="`/static/gifts/covers/${gift.name}.png`"
+                  :src="`/static/gifts/covers/${gift.specialLabel}.png`"
                   mode="scaleToFill"
                 />
                 <text class="gift-item-name">{{ gift.name }}</text>
