@@ -71,7 +71,6 @@
 
 <script setup>
 import '@/config/websocket'
-
 import LiveRoomChatInput from './components/LiveRoomChatInput'
 import LiveRoomCharRoom from './components/LiveRoomChatRoom/index.vue'
 import LiveRoomCover from './components/LiveRoomCover'
@@ -170,7 +169,7 @@ function onChatInputBlur(isEmit) {
   liveChatInputShow.value = false
 }
 // 创建ws链接
-function createWSConnection() {
+function createWSConnection() { 
   const liveInfo = liveStore.liveSlideList[liveOpenIndex.value]
   ws = new WebsocketClient({
     url: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`,

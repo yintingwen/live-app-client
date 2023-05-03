@@ -4,7 +4,7 @@
       <view class="user-avatar">
         <image
           class="user-avatar-image"
-          :src="userInfo.avatar || '/static/images/mime/avatar_default.png'"
+          :src="userInfo.avatar || '/static/images/common/avatar_default.png'"
           mode="scaleToFill"
         />
       </view>

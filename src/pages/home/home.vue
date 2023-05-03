@@ -21,7 +21,7 @@ import HomeLiveCard from './components/HomeLiveCard/index.vue'
 import { ref } from 'vue'
 import { HOME_TABS } from '@constants/home'
 import { useLiveStore } from '@stores/live'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { useTabbarTheme } from '@hooks/tabbar'
 
 useTabbarTheme('bright')
@@ -29,7 +29,11 @@ const liveStore = useLiveStore()
 const tabActive = ref(1)
 
 onLoad(() => {
-  liveStore.getLiveList()
+  getLiveList()
+})
+
+onPullDownRefresh(() => {
+  getLiveList()
 })
 
 function onTabChange(id) {
@@ -39,6 +43,14 @@ function onTabChange(id) {
 function onTapLive (index) {
   liveStore.setLiveSlideList(index)
   uni.navigateTo({ url: '/pages/live-room/live-room'})
+}
+
+async function getLiveList () {
+  try {
+    await liveStore.getLiveList()
+  } finally {
+    uni.stopPullDownRefresh()
+  }
 }
 
 </script>
