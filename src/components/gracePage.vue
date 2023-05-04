@@ -25,7 +25,7 @@
     </view>
     <!-- #ifndef APP-PLUS -->
     <view
-      v-if="!isSwitchPage"
+      v-if="!isTabPage"
       :style="{ width: '100%', height: iphoneXButtomHeight + 'px' }"
     ></view>
     <!-- #endif -->
@@ -35,7 +35,7 @@
       <!-- iphoneX 占位 view -->
       <!-- #ifndef APP-PLUS -->
       <view
-        v-if="!isSwitchPage"
+        v-if="!isTabPage"
         :style="{ width: '100%', height: iphoneXButtomHeight + 'px' }"
       ></view>
       <!-- #endif -->
@@ -58,7 +58,7 @@ export default {
     statusBarBG: { type: String, default: 'none' },
     footerIndex: { type: Number, default: 999 },
     footerBg: { type: String, default: '' },
-    isSwitchPage: { type: Boolean, default: false },
+    isTabPage: { type: Boolean, default: false },
     rbWidth: { type: Number, default: 100 },
     rbBottom: { type: Number, default: 100 },
     rbRight: { type: Number, default: 20 },

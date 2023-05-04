@@ -18,6 +18,10 @@ export default defineConfig({
     [/^m(\w)-(\d+)$/, (match) => ({ [`margin-${BORDER_SHORT[match[1]]}`]: `${match[2]}rpx` })],
     [/^box-full$/, () => ({ width: '100%', height: '100%' })],
   ],
+  shortcuts: {
+    'flex-center': ['flex', 'items-center', 'justify-center'],
+    'flex-between': ['flex', 'items-center', 'justify-between'],
+  },
   transformers: [
     // https://github.com/MellowCo/unocss-preset-weapp/tree/main/src/transformer/transformerAttributify
     transformerAttributify(),

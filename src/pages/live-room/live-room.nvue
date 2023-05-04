@@ -82,7 +82,7 @@ import LiveRoomGiftList from './components/LiveRoomGiftList'
 import * as liveApi from '@apis/live'
 import { useSystemStore } from '@stores/system'
 import { computed, ref } from 'vue'
-import { onLoad, onUnload } from '@dcloudio/uni-app'
+import { onLoad, onUnload, onHide, onShow } from '@dcloudio/uni-app'
 
 import { useLiveStore } from '@/stores/live'
 import { debounce } from '@utils/common'
@@ -121,7 +121,6 @@ const liveRoomUserCount = ref(0)
 const liveRoomInfo = ref({})
 const liveRoomUserInfo = ref({})
 
-
 // 单个直播间的布局
 const liveRoomLayout = computed(() => ({
   height: systemStore.screenHeight + 'px',
@@ -140,6 +139,11 @@ onLoad(() => {
 })
 
 onUnload(() => {
+  ws.close()
+})
+
+onHide(() => {
+  console.log('hide');
   ws.close()
 })
 
@@ -272,5 +276,7 @@ function onTapGift(gift) {
   position: fixed;
   top: 0;
   left: 0;
+  bottom: 0;
+  right: 0;
 }
 </style>

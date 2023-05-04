@@ -13,16 +13,28 @@ export const useUserStore = defineStore('user', () => {
   }
   const userIsLogin = computed(() => !!userToken)
 
-  async function login (form) {
-    form = { account: '17779100409', password: '123456', grantType: 'password', tenantId: VITE_USER_TENANT_ID }
+  // 用户登录
+  async function userLogin (form) {
     const res = await userApi.postUserLogin(form)
-    
+    setUserToken(res.accessToken)
+    await getUserInfo()
+  }
+
+  // 用户注册
+  async function userRegister (form) {
+    await userApi.postUserRegister(form)
+    await userLogin({
+      password: form.password,
+      account: form.account,
+      grantType: 'password',
+      tenantId: '000001'
+    })
   }
 
   // 设置用户信息
   function setUserInfo (info) {
     userInfo.value = info
-    uni.setStorage(USER_INFO_STORAGE, info)
+    uni.setStorageSync(USER_INFO_STORAGE, info)
   }
   // 获取用户信息
   async function getUserInfo () {
@@ -33,6 +45,7 @@ export const useUserStore = defineStore('user', () => {
   // 移除用户信息
   function removeUserInfo () {
     userInfo.value = null
+    uni.removeStorageSync(USER_INFO_STORAGE)
   }
 
   // 设置用户token
@@ -50,6 +63,8 @@ export const useUserStore = defineStore('user', () => {
     userInfo,
     userToken,
     userIsLogin,
+    userLogin,
+    userRegister,
     getUserInfo,
     setUserInfo,
     removeUserInfo,

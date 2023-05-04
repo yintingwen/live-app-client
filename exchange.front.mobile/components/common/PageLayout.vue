@@ -11,7 +11,7 @@
       :rbBottom="rbBottom"
       :rbRight="rbRight"
       :footerBg="footerBg"
-      :isSwitchPage="isSwitchPage"
+      :isTabPage="isTabPage"
     >
       <view v-if="header" class="page-header" slot="gHeader">
         <slot name="header"></slot>
@@ -73,7 +73,7 @@ export default {
     rbBottom: { type: Number, default: 100 }, // 悬浮挂件bottom值
     rbRight: { type: Number, default: 20 }, // 悬浮挂件right值
 
-    isSwitchPage: { type: Boolean, default: false } // 页面是否为一个 入口页内包含的切换页面( 不需要进行 iphoneX 底部适配 )
+    isTabPage: { type: Boolean, default: false } // 页面是否为一个 入口页内包含的切换页面( 不需要进行 iphoneX 底部适配 )
   },
   methods: {},
   components: {

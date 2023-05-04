@@ -15,14 +15,14 @@
     <view :class="['custom-page-body']" :style="style">
       <slot></slot>
     </view>
-    <u-safe-bottom v-if="!isSwitchPage"></u-safe-bottom>
+    <u-safe-bottom v-if="!isTabPage"></u-safe-bottom>
   </view>
 </template>
 
 <script setup name="co-page">
 import { defineProps, computed } from 'vue'
 defineProps({
-  isSwitchPage: { type: Boolean, default: false },
+  isTabPage: { type: Boolean, default: false },
   customHeader: { type: Boolean, default: false }, // 是否自定义头部
   navHeight: { type: Number, default: 44 }, // 导航栏高度
   navText: { type: String, default: '' }, // 导航栏文字
@@ -35,16 +35,15 @@ defineProps({
 <style lang="scss" scoped>
 .custom-page-fill {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .custom-page-body {
     flex: 1;
   }
 }
 
 .custom-page {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-
   .custom-page-header {
     .custom-page-header-container {
       width: 100%;
