@@ -142,6 +142,10 @@ onUnload(() => {
   ws.close()
 })
 
+onShow(() => {
+  ws.connect()
+})
+
 onHide(() => {
   console.log('hide');
   ws.close()
