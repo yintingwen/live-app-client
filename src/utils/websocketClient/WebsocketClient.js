@@ -1,5 +1,6 @@
 // src/WebsocketClient.ts
 import EventEmitter from "eventemitter3";
+import { log } from "../dev";
 
 // src/WebscoketClientInterceptor.ts
 var WEBSOCKET_CLIENT_INTERCEPTOR_NAMES = ["send", "message", "sub", "unsub"];
@@ -329,6 +330,7 @@ var _WebsocketClient = class {
    * @param {*} err 错误对象
    */
   handleError(err) {
+    log('ws error', err, model)
     this.status = 2 /* ERROR */;
     this.event.emit("error", err);
   }

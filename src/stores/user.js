@@ -5,12 +5,12 @@ import * as userApi from '@apis/user'
 
 export const useUserStore = defineStore('user', () => {
   const userInfo = ref(uni.getStorageSync(USER_INFO_STORAGE) || {})
-  const userToken = ref(null)
-  if (import.meta.env.DEV) {
-    userToken.value = import.meta.env.VITE_TOKEN_TEST
-  } else {
-    userToken.value = uni.getStorageSync(USER_TOKEN_STORAGE) || null
-  }
+  const userToken = ref(uni.getStorageSync(USER_TOKEN_STORAGE) || null)
+  // if (import.meta.env.DEV) {
+  //   userToken.value = import.meta.env.VITE_TOKEN_TEST
+  // } else {
+  //   userToken.value = uni.getStorageSync(USER_TOKEN_STORAGE) || null
+  // }
   const userIsLogin = computed(() => !!userToken)
 
   // 用户登录

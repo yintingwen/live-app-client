@@ -17,7 +17,7 @@
       <video
         v-if="liveOpenIndex === index"
         :id="`video-${item.id}`"
-        :src="`http://121.62.18.249:8080/play/d87d13a23f71478cb5030170daae72d7.flv`"
+        :src="`http://121.62.18.249:8080/play/${item.streamLabel}.flv`"
         :controls="false"
         :style="liveRoomLayout"
         :autoplay="true"
@@ -52,6 +52,7 @@
     v-model:show="liveChatInputShow"
     ref="liveChatInputRef"
     @blur="onChatInputBlur(true)"
+    @send="onChatInputSend"
   />
   <u-popup
     :show="giftListShow"
@@ -128,7 +129,7 @@ const liveRoomLayout = computed(() => ({
 }))
 
 onLoad(() => {
-  const liveRoom = liveStore.liveSlideList[liveOpenIndex.value]
+  const liveRoom = liveStore.liveSlideList[0]
   liveRoomInfo.value = liveRoom
   liveRoomUserInfo.value = liveRoom.userInfo
   liveRoomUserCount.value = liveRoom.userCount
@@ -147,7 +148,6 @@ onShow(() => {
 })
 
 onHide(() => {
-  console.log('hide');
   ws.close()
 })
 
@@ -176,9 +176,19 @@ function onTapChat() {
 function onChatInputBlur(isEmit) {
   liveChatInputShow.value = false
 }
+function onChatInputSend() {
+  ws.send({
+    method: 'Chat',
+    data: liveChatInputText.value,
+    room: liveRoomInfo.value.id,
+  })
+  liveChatInputShow.value = false
+}
 // 创建ws链接
-function createWSConnection() { 
+async function createWSConnection() {
+  uni.showToast({ title: '正在连接直播间', icon: 'none' })
   const liveInfo = liveStore.liveSlideList[liveOpenIndex.value]
+  uni.showToast({ title: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`, icon: 'none' })
   ws = new WebsocketClient({
     url: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`,
   })
@@ -206,7 +216,7 @@ function createWSConnection() {
         })
         break
       }
-      case WS_RECEIVE_TYPE_FOLLOW_SUCCESS:{
+      case WS_RECEIVE_TYPE_FOLLOW_SUCCESS: {
         uni.showToast({ title: '关注成功', icon: 'none' })
         break
       }

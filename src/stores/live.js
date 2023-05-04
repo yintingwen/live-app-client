@@ -16,8 +16,8 @@ export const useLiveStore = defineStore('live', () => {
   // 获取直播滑动列表
   async function setLiveSlideList (index) {
   	const list = [...liveList.value]
-    const target = liveList.value[index]
-    liveIndex.value.splice(index, 1)
+    const target = list[index]
+    list.splice(index, 1)
     list.unshift(target)
     liveSlideList.value = list
   }
