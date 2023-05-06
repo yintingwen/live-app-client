@@ -1,24 +1,20 @@
-import httpToastConfg from "./apiToast"
-import { log } from "@utils/dev"
+import httpToastConfg from './apiToast'
+import { log } from '@utils/dev'
 import { useUserStore } from '@stores/user'
-import Request from 'luch-request' 
+import Request from 'luch-request'
 
 const http = new Request({
   baseURL: import.meta.env.VITE_HTTP_URL,
   header: {
-    Authorization: 'Basic c2FiZXI6c2FiZXJfc2VjcmV0'
-  }
+    Authorization: 'Basic c2FiZXI6c2FiZXJfc2VjcmV0',
+  },
 })
 
 http.interceptors.request.use(
   (config) => {
     const user = useUserStore()
 
-    if (import.meta.env.DEV) {
-      config.header['kg-framework-auth'] = `bearer ${import.meta.env.VITE_TOKEN_TEST}`
-    } else {
-      config.header['kg-framework-auth'] = `bearer ${user.userToken || ''}`
-    }
+    config.header['kg-framework-auth'] = `bearer ${user.userToken || ''}`
 
     return config
   },
@@ -31,13 +27,15 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   (response) => {
     /* 对响应成功做点什么 可使用async await 做异步操作*/
-    const { data: { code, msg, data } } = response
-    log('response success', response);
+    const {
+      data: { code, msg, data },
+    } = response
+    log('response success', response)
     if (code !== 200) {
       uni.showToast({
         title: msg,
         icon: 'error',
-        duration: 2000
+        duration: 2000,
       })
       return Promise.reject(msg)
     }
@@ -45,12 +43,12 @@ http.interceptors.response.use(
     return data
   },
   (error) => {
-    const { data = {}} = error
-    log('response error', error);
+    const { data = {} } = error
+    log('response error', error)
     uni.showToast({
       title: data.message || error.message || '网络异常',
       icon: 'error',
-      duration: 2000
+      duration: 2000,
     })
     return Promise.reject(error)
   }
