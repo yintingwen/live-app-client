@@ -7,6 +7,7 @@ export const useSystemStore = defineStore('system', () => {
   const devicePixelRatio = computed(() => getSystemInfo().devicePixelRatio)
   const screenHeight = computed(() => getSystemInfo().screenHeight)
   const screenWidth = computed(() => getSystemInfo().screenWidth)
+  const windowHeight = computed(() => getSystemInfo().windowHeight)
 
   function getSystemInfo () {
     if (systemInfo.value === null) {
@@ -18,6 +19,7 @@ export const useSystemStore = defineStore('system', () => {
   return {
     systemInfo,
     screenHeight,
+    windowHeight,
     screenWidth,
     devicePixelRatio,
     getSystemInfo

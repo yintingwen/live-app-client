@@ -52,6 +52,9 @@ export default defineConfig({
     UnoCSS(),
     AutoImport({
       imports:["vue","vue-router"],
+      dirs: [
+        './src/stores'
+      ],
       dts:'src/auto-import.d.ts'    // 路径下自动生成文件夹存放全局指令
     }),
     uni(),
