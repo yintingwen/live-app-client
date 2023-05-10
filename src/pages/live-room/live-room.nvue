@@ -167,6 +167,7 @@ const liveRoomChange = debounce((index) => {
   liveOpenIndex.value = index
   getRoomInfo()
   createWSConnection()
+  ws.connect()
 }, 0)
 // 点击说点什么
 function onTapChat() {
@@ -185,59 +186,78 @@ function onChatInputSend() {
   liveChatInputShow.value = false
 }
 // 创建ws链接
-async function createWSConnection() {
-  uni.showToast({ title: '正在连接直播间', icon: 'none' })
+function createWSConnection() {
   const liveInfo = liveStore.liveSlideList[liveOpenIndex.value]
-  uni.showToast({ title: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`, icon: 'none' })
   ws = new WebsocketClient({
     url: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`,
   })
   ws.on('open', () => {
-    ws.sendByTemplate(WS_ROOM_SHAKE_HANDS, liveInfo.id)
+    try {
+      uni.showModal({
+        title: '提示',
+        content: 'ws连接成功',
+      })
+      ws.sendByTemplate(WS_ROOM_SHAKE_HANDS, liveInfo.id)
+    } catch (error) {
+      uni.showModal({
+        title: '提示',
+        content: JSON.stringify(error),
+      })
+    }
   })
   ws.on('message', (data) => {
     log('ws message', data)
-    const { type, msg, gift } = data
-    switch (type) {
-      case WS_RECEIVE_TYPE_FOLLOW_ERROR:
-      case WS_RECEIVE_TYPE_SEND_GIFT_ERROR: {
-        uni.showToast({ title: msg, icon: 'none' })
-        break
-      }
-      case WS_RECEIVE_TYPE_UPDATE_COUNT: {
-        liveRoomUserCount.value = data.count
-        break
-      }
-      case WS_RECEIVE_TYPE_CHAT_SUCCESS: {
-        chatRoomList.value.push({
-          name: data.name,
-          level: data.vipId,
-          text: data.data,
-        })
-        break
-      }
-      case WS_RECEIVE_TYPE_FOLLOW_SUCCESS: {
-        uni.showToast({ title: '关注成功', icon: 'none' })
-        break
-      }
-      case WS_RECEIVE_TYPE_SEND_GIFT_SUCCESS: {
-        liveRoomShowAnimation.value = true
-        setTimeout(() => {
-          giftAnimationRef.value.render(async (parser, player) => {
-            const videoItem = await parser.load(`/static/gifts/svgas/${gift.specialLabel}.svga`)
-            await player.setVideoItem(videoItem)
-            player.loops = 1
-            player.startAnimation()
-            player.onFinished(() => {
-              liveRoomShowAnimation.value = false
+    uni.showModal({
+      title: 'message on',
+      content: JSON.stringify(data),
+    })
+    try {
+      const { type, msg, gift } = data
+      switch (type) {
+        case WS_RECEIVE_TYPE_FOLLOW_ERROR:
+        case WS_RECEIVE_TYPE_SEND_GIFT_ERROR: {
+          uni.showToast({ title: msg, icon: 'none' })
+          break
+        }
+        case WS_RECEIVE_TYPE_UPDATE_COUNT: {
+          liveRoomUserCount.value = data.count
+          break
+        }
+        case WS_RECEIVE_TYPE_CHAT_SUCCESS: {
+          chatRoomList.value.push({
+            name: data.name,
+            level: data.vipId,
+            text: data.data,
+          })
+          break
+        }
+        case WS_RECEIVE_TYPE_FOLLOW_SUCCESS: {
+          uni.showToast({ title: '关注成功', icon: 'none' })
+          break
+        }
+        case WS_RECEIVE_TYPE_SEND_GIFT_SUCCESS: {
+          liveRoomShowAnimation.value = true
+          setTimeout(() => {
+            giftAnimationRef.value.render(async (parser, player) => {
+              const videoItem = await parser.load(`/static/gifts/svgas/${gift.specialLabel}.svga`)
+              await player.setVideoItem(videoItem)
+              player.loops = 1
+              player.startAnimation()
+              player.onFinished(() => {
+                liveRoomShowAnimation.value = false
+              })
             })
           })
-        })
-        break
+          break
+        }
       }
+    } catch (error) {
+      uni.showModal({
+        title: 'message error',
+        content: JSON.stringify(error),
+      })
     }
   })
-  ws.connect()
 }
 // 获取直播间信息
 async function getRoomInfo(id) {

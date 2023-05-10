@@ -51,9 +51,19 @@ export default defineConfig({
     commonjs(),
     UnoCSS(),
     AutoImport({
-      imports:["vue","vue-router"],
+      imports:[
+        "vue",
+        {
+          "@dcloudio/uni-app": ["onLoad", "onReady", "onShow", "onTabItemTap"]
+        }
+      ],
+      defaultExportByFilename: true,
       dirs: [
-        './src/stores'
+        './src/apis',
+        './src/constants',
+        './src/hooks',
+        './src/stores',
+        './src/utils',
       ],
       dts:'src/auto-import.d.ts'    // 路径下自动生成文件夹存放全局指令
     }),

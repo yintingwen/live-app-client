@@ -209,8 +209,14 @@ var _WebsocketClient = class {
       return;
     this.socket = uni.connectSocket({
       url: this.url,
-      success: () => console.log("connect success"),
-      fail: () => console.log("connect fail")
+      success: () => uni.showModal({
+        title: "connect success",
+        content: "connect success"
+      }),
+      fail: (e) => uni.showModal({
+        title: "connect fail",
+        content: JSON.stringify(e)
+      })
     });
     this.initOptions.reconnect && (this.reconnectOpen = true);
     this.socket.onOpen(this.handleOpen.bind(this));
@@ -314,7 +320,10 @@ var _WebsocketClient = class {
    * @param {*} msg 数据
    */
   async handelMessage(msg) {
-    console.log(msg);
+    uni.showModal({
+      title: "message",
+      content: JSON.stringify(msg)
+    })
     let { data } = msg;
     if (!(data instanceof ArrayBuffer)) {
       try {
