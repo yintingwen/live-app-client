@@ -23,9 +23,9 @@
       </view>
     </view>
     <view class="live-room-gift-swiper">
-      <swiper :style="{ height: '520rpx' }" :current="activeTab" @change="onSwiperChange">
+      <swiper :style="{ height: '550rpx' }" :current="activeTab" @change="onSwiperChange">
         <swiper-item v-for="list in renderGiftList" :key="list.id">
-          <scroll-view scroll-y :style="{ height: '525rpx' }">
+          <scroll-view scroll-y :style="{ height: '550rpx' }">
             <view class="live-room-gift-swiper-item">
               <view 
                 v-for="gift in list" 
@@ -90,7 +90,6 @@ function onSwiperChange (e) {
 
   .live-room-gift-swiper {
     width: 750rpx;
-    margin-bottom: 32rpx;
 
     .live-room-gift-swiper-item {
       width: 750rpx;

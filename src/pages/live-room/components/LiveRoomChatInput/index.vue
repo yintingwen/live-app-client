@@ -16,7 +16,7 @@
           ref="input"
           :adjust-position="false"
           @blur="onInputBlur"
-          @change="emits('update:text', $event.detail.value)"
+          @input="onInputChange"
         />
         <view class="send-btn" @tap.stop="onTapSend">
           <text class="send-btn-text">发送</text>
@@ -71,6 +71,10 @@ function onKeyboardHeightChange(res) {
   } else {
     inputTop.value = systemStore.screenHeight
   }
+}
+
+function onInputChange (e) {
+  emits('update:text', e.detail.value)
 }
 
 function onInputBlur() {

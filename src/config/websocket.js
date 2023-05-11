@@ -1,4 +1,3 @@
-import { USER_TOKEN_STORAGE } from '@/constants/user'
 import {
   WS_SEND_METHOD_SEND_GIFT,
   WS_ROOM_SHAKE_HANDS,
@@ -9,11 +8,11 @@ import WebsocketClient from '@/utils/websocketClient/WebsocketClient'
 
 // 握手模板
 WebsocketClient.template.add(WS_ROOM_SHAKE_HANDS, (room) => {
-  let token = uni.getStorageSync(USER_TOKEN_STORAGE)
+  const user = useUserStore()
   return {
     method: WS_SEND_METHOD_INFO,
     room,
-    token,
+    token: user.userToken,
   }
 })
 // 关注模板

@@ -7,7 +7,7 @@ const user = useUserStore()
 
 onLaunch(() => {
   system.getSystemInfo()
-  if (user.userToken) {
+  if (user.userIsLogin) {
     user.getUserInfo()
   } else {
     uni.reLaunch({ url: '/pages/login/login' })

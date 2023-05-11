@@ -9,15 +9,11 @@ export const tabbarThemeBgc = {
   bright: '#FFFFFF',
   dark: '#000000',
 }
-export let tabbarThemeCache = ''
 
 export function useTabbarTheme(theme) {
   onShow(() => {
-    if (tabbarThemeCache !== theme) {
-      tabbarThemeCache = theme
-      changeIcon()
-      changeStyle()
-    }
+    changeIcon()
+    changeStyle()
   })
 
   function changeIcon() {

@@ -209,14 +209,8 @@ var _WebsocketClient = class {
       return;
     this.socket = uni.connectSocket({
       url: this.url,
-      success: () => uni.showModal({
-        title: "connect success",
-        content: "connect success"
-      }),
-      fail: (e) => uni.showModal({
-        title: "connect fail",
-        content: JSON.stringify(e)
-      })
+      success: (e) => console.log('ws success', e),
+      fail: (e) => console.log('ws fail', e),
     });
     this.initOptions.reconnect && (this.reconnectOpen = true);
     this.socket.onOpen(this.handleOpen.bind(this));
@@ -244,6 +238,7 @@ var _WebsocketClient = class {
    * @param {*} data
    */
   async send(data) {
+    console.log(data);
     if (!this.socket || this.status !== 1 /* CONNECTED */) {
       throw new Error("socket is not connected");
     }
@@ -251,6 +246,7 @@ var _WebsocketClient = class {
     if (typeof data === "object" && !(data instanceof ArrayBuffer)) {
       data = JSON.stringify(data);
     }
+    console.log('s', data);
     this.socket.send({ data });
   }
   /**
@@ -320,10 +316,6 @@ var _WebsocketClient = class {
    * @param {*} msg 数据
    */
   async handelMessage(msg) {
-    uni.showModal({
-      title: "message",
-      content: JSON.stringify(msg)
-    })
     let { data } = msg;
     if (!(data instanceof ArrayBuffer)) {
       try {

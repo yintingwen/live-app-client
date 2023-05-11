@@ -5,8 +5,8 @@ import * as userApi from '@apis/user'
 
 export const useUserStore = defineStore('user', () => {
   const userInfo = ref(uni.getStorageSync(USER_INFO_STORAGE) || {})
-  const userToken = ref(uni.getStorageSync(USER_TOKEN_STORAGE) || null)
-  const userIsLogin = computed(() => !!userToken)
+  const userToken = ref(import.meta.env.VITE_TEST_TOKEN || uni.getStorageSync(USER_TOKEN_STORAGE) || null)
+  const userIsLogin = computed(() => !!userToken.value)
 
   // 用户登录
   async function userLogin (form) {

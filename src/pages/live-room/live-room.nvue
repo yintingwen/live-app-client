@@ -41,13 +41,13 @@
         @tapInput="onTapChat"
         @tapGift="() => (giftListShow = true)"
       />
-      <LiveRoomCharRoom
+      <LiveRoomChatRoom
         v-if="!giftListShow && liveOpenIndex === index && !liveVideoLoading"
         :list="chatRoomList"
       />
     </swiper-item>
   </swiper>
-  <live-room-chat-input
+  <LiveRoomChatInput
     v-model:text="liveChatInputText"
     v-model:show="liveChatInputShow"
     ref="liveChatInputRef"
@@ -61,6 +61,7 @@
     @close="() => (giftListShow = false)"
   >
     <LiveRoomGiftList :list="giftList" @tapGift="onTapGift" />
+    <LiveRoomGiftQuantity/>
   </u-popup>
   <u-popup :show="anchorInfoShow" bgColor="transparent" @close="() => (anchorInfoShow = false)">
     <LiveRoomAnchorInfo :anchorInfo="liveRoomUserInfo" />
@@ -73,12 +74,13 @@
 <script setup>
 import '@/config/websocket'
 import LiveRoomChatInput from './components/LiveRoomChatInput'
-import LiveRoomCharRoom from './components/LiveRoomChatRoom/index.vue'
+import LiveRoomChatRoom from './components/LiveRoomChatRoom/index.vue'
 import LiveRoomCover from './components/LiveRoomCover'
 import LiveRoomHeader from './components/LiveRoomHeader'
 import LiveRoomFooter from './components/LiveRoomFooter'
 import LiveRoomAnchorInfo from './components/LiveRoomAnchorInfo'
 import LiveRoomGiftList from './components/LiveRoomGiftList'
+import LiveRoomGiftQuantity from './components/LiveRoomGiftQuantity'
 
 import * as liveApi from '@apis/live'
 import { useSystemStore } from '@stores/system'
@@ -106,7 +108,7 @@ const liveStore = useLiveStore()
 let ws = null
 
 const anchorInfoShow = ref(false)
-const giftListShow = ref(false)
+const giftListShow = ref(true)
 const giftAnimationRef = ref(null)
 const giftList = ref([]) // 礼物列表
 
@@ -115,7 +117,7 @@ const liveOpenIndex = ref(0)
 const liveVideoLoading = ref(false)
 const liveChatInputShow = ref(false)
 const liveChatInputRef = ref(null)
-const liveChatInputText = ref('')
+const liveChatInputText = ref(null)
 const liveRoomShowAnimation = ref(false)
 const liveRoomUserCount = ref(0)
 
@@ -178,11 +180,13 @@ function onChatInputBlur(isEmit) {
   liveChatInputShow.value = false
 }
 function onChatInputSend() {
+  console.log(liveChatInputText.value);
   ws.send({
     method: 'Chat',
     data: liveChatInputText.value,
     room: liveRoomInfo.value.id,
   })
+  liveChatInputText.value = null
   liveChatInputShow.value = false
 }
 // 创建ws链接
@@ -192,70 +196,48 @@ function createWSConnection() {
     url: `ws://${liveInfo.socketAddr}:${liveInfo.socketPort}`,
   })
   ws.on('open', () => {
-    try {
-      uni.showModal({
-        title: '提示',
-        content: 'ws连接成功',
-      })
-      ws.sendByTemplate(WS_ROOM_SHAKE_HANDS, liveInfo.id)
-    } catch (error) {
-      uni.showModal({
-        title: '提示',
-        content: JSON.stringify(error),
-      })
-    }
+    ws.sendByTemplate(WS_ROOM_SHAKE_HANDS, liveInfo.id)
   })
   ws.on('message', (data) => {
     log('ws message', data)
-    uni.showModal({
-      title: 'message on',
-      content: JSON.stringify(data),
-    })
-    try {
-      const { type, msg, gift } = data
-      switch (type) {
-        case WS_RECEIVE_TYPE_FOLLOW_ERROR:
-        case WS_RECEIVE_TYPE_SEND_GIFT_ERROR: {
-          uni.showToast({ title: msg, icon: 'none' })
-          break
-        }
-        case WS_RECEIVE_TYPE_UPDATE_COUNT: {
-          liveRoomUserCount.value = data.count
-          break
-        }
-        case WS_RECEIVE_TYPE_CHAT_SUCCESS: {
-          chatRoomList.value.push({
-            name: data.name,
-            level: data.vipId,
-            text: data.data,
-          })
-          break
-        }
-        case WS_RECEIVE_TYPE_FOLLOW_SUCCESS: {
-          uni.showToast({ title: '关注成功', icon: 'none' })
-          break
-        }
-        case WS_RECEIVE_TYPE_SEND_GIFT_SUCCESS: {
-          liveRoomShowAnimation.value = true
-          setTimeout(() => {
-            giftAnimationRef.value.render(async (parser, player) => {
-              const videoItem = await parser.load(`/static/gifts/svgas/${gift.specialLabel}.svga`)
-              await player.setVideoItem(videoItem)
-              player.loops = 1
-              player.startAnimation()
-              player.onFinished(() => {
-                liveRoomShowAnimation.value = false
-              })
+    const { type, msg, gift } = data
+    switch (type) {
+      case WS_RECEIVE_TYPE_FOLLOW_ERROR:
+      case WS_RECEIVE_TYPE_SEND_GIFT_ERROR: {
+        uni.showToast({ title: msg, icon: 'none' })
+        break
+      }
+      case WS_RECEIVE_TYPE_UPDATE_COUNT: {
+        liveRoomUserCount.value = data.count
+        break
+      }
+      case WS_RECEIVE_TYPE_CHAT_SUCCESS: {
+        chatRoomList.value.push({
+          name: data.name,
+          level: data.vipId,
+          text: data.data,
+        })
+        break
+      }
+      case WS_RECEIVE_TYPE_FOLLOW_SUCCESS: {
+        uni.showToast({ title: '关注成功', icon: 'none' })
+        break
+      }
+      case WS_RECEIVE_TYPE_SEND_GIFT_SUCCESS: {
+        liveRoomShowAnimation.value = true
+        setTimeout(() => {
+          giftAnimationRef.value.render(async (parser, player) => {
+            const videoItem = await parser.load(`/static/gifts/svgas/${gift.specialLabel}.svga`)
+            await player.setVideoItem(videoItem)
+            player.loops = 1
+            player.startAnimation()
+            player.onFinished(() => {
+              liveRoomShowAnimation.value = false
             })
           })
-          break
-        }
+        })
+        break
       }
-    } catch (error) {
-      uni.showModal({
-        title: 'message error',
-        content: JSON.stringify(error),
-      })
     }
   })
 }
